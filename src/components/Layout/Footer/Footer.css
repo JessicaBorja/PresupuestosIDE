@@ -1,0 +1,28 @@
+footer {
+    text-align: center;
+}
+
+.footer__comp {
+    background-color: var(--secondary-bg-color);
+    padding: 1rem;
+}
+
+.footer__dev {
+    background-color: var(--main-bg-color);
+    padding: 0.25rem;
+}
+
+footer span, footer a, footer p, footer h3 {
+    color: white;
+    font-size: large;
+}
+
+footer p {
+    margin-bottom: 0
+}
+
+footer img {
+    margin-left: 0.5rem;
+}
+
+@media (min-width: 600px) {}
