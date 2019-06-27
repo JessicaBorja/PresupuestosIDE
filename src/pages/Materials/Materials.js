@@ -6,6 +6,8 @@ import "./Materials.css";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 import { Table } from "react-bootstrap";
+import { Query } from "react-apollo";
+import { GET_MATERIALS } from "./constants";
 
 export class MaterialsPage extends Component {
   state = { file: null };
@@ -72,67 +74,41 @@ export class MaterialsPage extends Component {
   };
 
   render() {
-    const myData = [
-      {
-        name: "Tanner Linsley",
-        age: 26,
-        description: "feof",
-        friend: {
-          name: "Jason Maurer",
-          age: 23
-        }
-      },
-      {
-        name: "Oscar Rosete",
-        age: 27,
-        description: "guapo",
-        friend: {
-          name: "Erick Rosete",
-          age: 21
-        }
-      }
-    ];
-
-    const myColumns = [
+    const columns = [
       {
         Header: "Clave",
+        accessor: "materialKey",
+        filterable: true,
+        filterMethod: (filter, row) =>
+          row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
+      },
+      {
+        Header: "Nombre",
         accessor: "name",
         filterable: true,
         filterMethod: (filter, row) =>
           row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
       },
       {
-        Header: "Descripción",
-        accessor: "description",
+        Header: "Unidad",
+        accessor: "measurementUnit",
         filterable: true,
         filterMethod: (filter, row) =>
           row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
       },
       {
-        Header: "Unidad",
-        accessor: "name" // String-based value accessors!
-      },
-      {
         Header: "Cantidad",
-        accessor: "name" // String-based value accessors!
+        accessor: "quantity",
+        filterable: true,
+        filterMethod: (filter, row) =>
+          row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
       },
       {
         Header: "Precio",
-        accessor: "name" // String-based value accessors!
-      },
-      {
-        Header: "Descripción",
-        accessor: "age",
-        Cell: props => <span className="number">{props.value}</span> // Custom cell components!
-      },
-      {
-        id: "friendName", // Required because our accessor is not a string
-        Header: "Friend Name",
-        accessor: d => d.friend.name // Custom value accessors!
-      },
-      {
-        Header: props => <span>Friend Age</span>, // Custom header components!
-        accessor: "friend.age"
+        accessor: "unitPrice",
+        filterable: true,
+        filterMethod: (filter, row) =>
+          row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
       }
     ];
 
@@ -184,7 +160,19 @@ export class MaterialsPage extends Component {
             </Table>
           </div>
           <div style={{ width: "70vw", height: "50vh" }}>
-            <ReactTable data={myData} columns={myColumns} defaultPageSize={5} />
+            <Query query={GET_MATERIALS}>
+              {({ loading, error, data }) => {
+                if (loading) return <Spinner />;
+                if (error) return <p>Error :( recarga la página!</p>;
+                return (
+                  <ReactTable
+                    data={data.materials}
+                    columns={columns}
+                    defaultPageSize={10}
+                  />
+                );
+              }}
+            </Query>
           </div>
         </div>
       </Layout>
