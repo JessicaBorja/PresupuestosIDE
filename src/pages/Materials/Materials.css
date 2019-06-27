@@ -1,3 +1,24 @@
 .materials{
-    
+    display:flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    background: var(--light-gray);
+    min-height: 100%;
+}
+
+.materials h1{
+    padding: 1.25rem 0;
+}
+
+.materials-table {
+    padding: 1rem;
+    width: 100%;
+}
+
+@media screen and (min-width: 600px){
+    .materials-table{
+        width: 80%;
+    }
 }

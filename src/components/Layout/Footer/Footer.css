@@ -3,15 +3,20 @@ footer {
 }
 
 .footer__comp {
-    background-color: var(--secondary-bg-color);
+    background-color: var(--main-contrast-color);
     padding: 1rem;
 }
 
 .footer__dev {
-    background-color: var(--main-bg-color);
-    padding: 0.25rem;
+    background-color: var(--main-contrast-color);
+    padding: 0.2rem 0 1.5rem 0;
 }
 
+.footer__dev p,
+.footer__dev a{
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+}
 footer span, footer a, footer p, footer h3 {
     color: white;
     font-size: large;
