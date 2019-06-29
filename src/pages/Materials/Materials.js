@@ -142,10 +142,13 @@ export class MaterialsPage extends Component {
             <button
               data-param={row.value}
               onClick={() => this.handleEdit(row.original, this)}
+              class="edit-btn"
             >
               Edit
             </button>
-            <button onClick={() => this.handleDelete.bind(this, row.original)}>
+            <button 
+              onClick={() => this.handleDelete.bind(this, row.original)}
+              class="danger-btn">
               Delete
             </button>
           </div>
@@ -166,7 +169,7 @@ export class MaterialsPage extends Component {
                 onChange={this.changeInputHandler}
                 type="file"
               />
-              <button type="submit">Importar materiales</button>
+              <button type="submit" class="submit-btn">Importar materiales</button>
             </form>
           )}
 
