@@ -79,9 +79,9 @@ class ProductModal extends Component {
                                 onChange={this.handleChange('measurementUnit')}/>    
                             </Col>
                         </Row>
-                        <Row>
-                            <Button variant="warning" onClick={this.props.onConfirm.bind(this,this.state)}>Guardar</Button>  
-                            <Button variant="danger">Cancelar</Button>
+                        <Row className="modal_buttons-container">
+                            <button className="edit-btn" onClick={this.props.onConfirm.bind(this,this.state)}>Guardar</button>  
+                            <button className="danger-btn">Cancelar</button>
                         </Row>
                     </Container>
                 </Modal.Body >
