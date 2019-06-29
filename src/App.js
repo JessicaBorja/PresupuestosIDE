@@ -5,7 +5,8 @@ import ScrollToTop from "./containers/ScrollToTop/ScrollToTop";
 import HomePage from "./pages/Home/Home"
 import ConceptsPage from "./pages/Concepts/Concepts";
 import MaterialsPage from "./pages/Materials/Materials";
-import UnitPage from "./pages/Unit/Unit";
+import UnitPage from "./pages/Unit/AddUnit/Unit";
+import EditPage from "./pages/Unit/UnitEdit/Unit";
 
 
 
@@ -52,6 +53,7 @@ class App extends Component {
               <Route path="/presupuestos" component={HomePage} />
               <Route path="/conceptos" component={ConceptsPage} />
               <Route path="/unitario" component={UnitPage} />
+              <Route path="/ConsultaUnitario" component={EditPage} />
               <Route path="/materiales" component={MaterialsPage} />
               <Redirect to="/presupuestos" />
             </Switch>
