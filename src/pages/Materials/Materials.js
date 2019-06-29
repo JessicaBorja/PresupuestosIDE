@@ -5,12 +5,18 @@ import "./Materials.css";
 // react table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
-import { Table } from "react-bootstrap";
-import { Query } from "react-apollo";
-import { GET_MATERIALS } from "./constants";
+// import { Table } from "react-bootstrap";
+import { Query, Mutation } from "react-apollo";
+import { GET_MATERIALS, EDIT_MATERIAL } from "./constants";
+// https://codesandbox.io/s/0pp97jnrvv
+// https://www.npmjs.com/package/react-table
+// https://react-bootstrap.github.io/components/forms/
+
+import MaterialModal from "../../components/Material/Modal/Modal";
+// import import ProductModal from "../../../components/Product/Modal/Modal"
 
 export class MaterialsPage extends Component {
-  state = { file: null };
+  state = { file: null, selectedMaterial: {} };
 
   submitHandler = async event => {
     event.preventDefault();
@@ -73,6 +79,25 @@ export class MaterialsPage extends Component {
     this.setState({ file });
   };
 
+  handleEdit = (material, stuff) => {
+    // console.log("edit")
+    // console.log(material)
+    // console.log(stuff)
+    // console.log(this.getAttribute('data-param'));
+
+    this.setState({
+      modalShow: true,
+      selectedMaterial: material
+      // selectedProduct: product
+    });
+  };
+
+  handleDelete = () => {
+    console.log("delete");
+  };
+
+  handleModalClose = () => this.setState({ modalShow: false });
+
   render() {
     const columns = [
       {
@@ -92,23 +117,39 @@ export class MaterialsPage extends Component {
       {
         Header: "Unidad",
         accessor: "measurementUnit",
-        filterable: true,
         filterMethod: (filter, row) =>
           row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
       },
       {
         Header: "Cantidad",
         accessor: "quantity",
-        filterable: true,
         filterMethod: (filter, row) =>
           row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
       },
       {
         Header: "Precio",
         accessor: "unitPrice",
-        filterable: true,
+        // headerStyle: {textAlign: 'right'},
+        Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
         filterMethod: (filter, row) =>
           row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
+      },
+      {
+        Header: props => <span>Operacion a realizar</span>, // Custom header components!
+        accessor: "_id",
+        Cell: row => (
+          <div>
+            <button
+              data-param={row.value}
+              onClick={() => this.handleEdit(row.original, this)}
+            >
+              Edit
+            </button>
+            <button onClick={() => this.handleDelete.bind(this, row.original)}>
+              Delete
+            </button>
+          </div>
+        )
       }
     ];
 
@@ -119,7 +160,7 @@ export class MaterialsPage extends Component {
           {this.state.loading ? (
             <Spinner />
           ) : (
-            <form onSubmit={this.submitHandler} encType="multipart/form-data">
+            <form className="materials-import" onSubmit={this.submitHandler} encType="multipart/form-data">
               <input
                 accept=".xlsx"
                 onChange={this.changeInputHandler}
@@ -128,38 +169,56 @@ export class MaterialsPage extends Component {
               <button type="submit">Importar materiales</button>
             </form>
           )}
-          <div className="materials-table">
-            <Table striped bordered hover size="sm" responsive="md">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>First Name</th>
-                  <th>Last Name</th>
-                  <th>Username</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>1</td>
-                  <td>Mark</td>
-                  <td>Otto</td>
-                  <td>@mdo</td>
-                </tr>
-                <tr>
-                  <td>2</td>
-                  <td>Jacob</td>
-                  <td>Thornton</td>
-                  <td>@fat</td>
-                </tr>
-                <tr>
-                  <td>3</td>
-                  <td colSpan="2">Larry the Bird</td>
-                  <td>@twitter</td>
-                </tr>
-              </tbody>
-            </Table>
-          </div>
-          <div style={{ width: "70vw", height: "50vh" }}>
+
+          {/* EDIT */}
+          <Mutation
+            mutation={EDIT_MATERIAL}
+            update={(cache, { data: { updateMaterial } }) => {
+              function updateArray(arr, index, newValue) {
+                console.log(arr);
+                arr[index] = newValue;
+                return arr;
+              }
+              console.log(updateMaterial);
+              let { materials } = cache.readQuery({ query: GET_MATERIALS });
+              let editedMaterialIndex = materials.findIndex(
+                material => material._id === updateMaterial._id
+              );
+              console.log("el nuevo");
+              updateArray(materials, editedMaterialIndex, updateMaterial);
+              cache.writeQuery({
+                query: GET_MATERIALS,
+
+                data: {
+                  materials: updateArray(
+                    materials,
+                    editedMaterialIndex,
+                    updateMaterial
+                  )
+                }
+              });
+            }}
+          >
+            {updateMaterial => (
+              <MaterialModal
+                show={this.state.modalShow}
+                onHide={this.handleModalClose}
+                product={this.state.selectedMaterial}
+                handleQuotation={this.handleQuotation}
+                onConfirm={(material, stuff) => {
+                  material.totalPrice = +material.totalPrice;
+                  material.unitPrice = +material.unitPrice;
+                  material.quantity = +material.quantity;
+                  updateMaterial({
+                    variables: { ...material }
+                  });
+                  this.setState({ modalShow: false });
+                }}
+              />
+            )}
+          </Mutation>
+
+          <div className="materials-table-cont">
             <Query query={GET_MATERIALS}>
               {({ loading, error, data }) => {
                 if (loading) return <Spinner />;

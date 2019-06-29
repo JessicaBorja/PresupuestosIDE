@@ -1,0 +1,41 @@
+.product__modal-img h2 {
+    text-align: center;
+    padding: 0.5rem;
+    font-weight: 400;
+    text-transform: uppercase;
+}
+
+.product__modal-details p {
+    font-size: 1.25rem;
+    margin: 1rem auto;
+}
+
+.product__modal-details h2 {
+    font-weight: 500;
+    margin-bottom: 1rem;
+}
+
+.product__modal-features {
+    margin: 1rem 0.5rem;
+}
+
+@media (min-width: 992px) {
+    .modal-lg {
+        max-width: 90vw;
+    }
+    .product__modal-img h2 {
+        font-size: 2.75rem;
+        padding: 1rem;
+    }
+    .product__modal-features ul {
+        columns: 2;
+        -webkit-columns: 2;
+        -moz-columns: 2;
+    }
+    .product__modal-details h2 {
+        font-size: 2.25rem;
+    }
+    .product__modal-details p {
+        font-size: 1.5rem;
+    }
+}
