@@ -6,9 +6,38 @@
     align-items: center;
     background: var(--main-gray);
     min-height: 100%;
-  }
+    position: relative;
+}
 
-  .budgetsContainer{
-      width: 80%;
-      padding-bottom: 2rem;
-  }
+.budgetsContainer {
+    width: 80%;
+    padding: 0 2rem 2rem 2rem;
+    margin-left: 20%;
+}
+
+.budget-content {
+    display: flex;
+    width: 100%;
+}
+
+.side-buttons {
+    display: flex;
+    position: fixed;
+    flex-direction: column;
+    width: 19%;
+    margin: 1rem;
+    padding: 1rem;
+    left: 0;
+    top: 20vh;
+    justify-content: space-evenly;
+    height: 20vh;
+    background: rgba(117, 117, 117, 0.15);
+    border-radius: 20px;
+}
+
+.import-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+}

@@ -7,7 +7,7 @@ import "react-table/react-table.css";
 import Layout from "../../components/Layout/Layout";
 import "./Budget.css";
 
-import BudgetModal from '../../components/Budget/Modal/Modal'
+import BudgetModal from "../../components/Budget/Modal/Modal";
 
 const range = len => {
   const arr = [];
@@ -118,19 +118,41 @@ export class BudgetPage extends Component {
       <Layout>
         <div className="budget">
           <h1>Presupuestos</h1>
-          <div className="budgetsContainer">
-            <ReactTable
-              data={data}
-              columns={columns}
-              defaultPageSize={10}
-              className="-highlight"
-            />
-            <BudgetModal
-              show={this.state.modalShow}
-              onHide={this.handleModalClose}
-              product={this.state.selectedMaterial}
-              handleQuotation={this.handleQuotation}
-            />
+          <div className="side-buttons">
+            <button className="submit-btn">Importar materiales</button>
+            <button className="submit-btn">Importar materiales</button>
+          </div>
+          
+          <div className="budget-content">
+            <div className="budgetsContainer">
+              <form
+                className="import-buttons"
+                onSubmit={this.submitHandler}
+                encType="multipart/form-data"
+              >
+                <input
+                  accept=".xlsx"
+                  onChange={this.changeInputHandler}
+                  type="file"
+                />
+                <button type="submit" class="submit-btn">
+                  Importar materiales
+                </button>
+              </form>
+
+              <ReactTable
+                data={data}
+                columns={columns}
+                defaultPageSize={10}
+                className="-highlight"
+              />
+              <BudgetModal
+                show={this.state.modalShow}
+                onHide={this.handleModalClose}
+                product={this.state.selectedMaterial}
+                handleQuotation={this.handleQuotation}
+              />
+            </div>
           </div>
         </div>
       </Layout>
