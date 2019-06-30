@@ -5,7 +5,9 @@ import ScrollToTop from "./containers/ScrollToTop/ScrollToTop";
 import HomePage from "./pages/Home/Home";
 import ConceptsPage from "./pages/Concepts/Concepts";
 import MaterialsPage from "./pages/Materials/Materials";
-import UnitPage from "./pages/Unit/Unit";
+import UnitPage from "./pages/Unit/AddUnit/Unit";
+import EditPage from "./pages/Unit/UnitEdit/Unit";
+import UnitDetail from "./pages/Unit/UnitDetail/Unit";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -52,7 +54,11 @@ class App extends Component {
             <Switch>
               <Route path="/presupuestos" component={HomePage} />
               <Route path="/conceptos" component={ConceptsPage} />
+              
+              <Route path="/unitario/:id" component={UnitDetail} />
               <Route path="/unitario" component={UnitPage} />
+              <Route path="/ConsultaUnitario" component={EditPage} />
+
               <Route path="/materiales" component={MaterialsPage} />
               <Redirect to="/presupuestos" />
             </Switch>
