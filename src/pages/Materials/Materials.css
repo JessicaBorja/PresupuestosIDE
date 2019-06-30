@@ -65,6 +65,10 @@ button{
   color: var(--main-gray);
 }
 
+.mutationbtn-container{
+  display: flex;
+  justify-content: space-evenly;
+}
 
 .modal-title.h4 {
   font-family: 'oswald', sans-serif;
@@ -78,6 +82,10 @@ button{
 .ReactTable .-pagination .-btn{
   color: rgb(0, 0, 0);
   background: rgba(0,0,0,0.3);
+}
+
+.input[type="file"]{
+
 }
 
 @media screen and (min-width: 600px) {

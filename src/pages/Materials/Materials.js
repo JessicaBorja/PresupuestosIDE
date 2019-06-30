@@ -138,7 +138,7 @@ export class MaterialsPage extends Component {
         Header: props => <span>Operacion a realizar</span>, // Custom header components!
         accessor: "_id",
         Cell: row => (
-          <div>
+          <div class="mutationbtn-container">
             <button
               data-param={row.value}
               onClick={() => this.handleEdit(row.original, this)}
