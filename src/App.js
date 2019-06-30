@@ -27,6 +27,7 @@ import {
 import { ApolloProvider } from "react-apollo";
 import ApolloClient from "apollo-boost";
 import "./App.css";
+import BudgetPage from "./pages/Budget/Budget";
 
 const client = new ApolloClient({
   uri: `${process.env.REACT_APP_SERVER_URL}/graphql`
@@ -52,7 +53,7 @@ class App extends Component {
         <ScrollToTop>
           <ApolloProvider client={client}>
             <Switch>
-              <Route path="/presupuestos" component={HomePage} />
+              <Route path="/presupuestos" component={BudgetPage} />
               <Route path="/conceptos" component={ConceptsPage} />
               
               <Route path="/unitario/:id" component={UnitDetail} />

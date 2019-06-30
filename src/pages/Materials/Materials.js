@@ -146,9 +146,10 @@ export class MaterialsPage extends Component {
             >
               Edit
             </button>
-            <button 
+            <button
               onClick={() => this.handleDelete.bind(this, row.original)}
-              class="danger-btn">
+              class="danger-btn"
+            >
               Delete
             </button>
           </div>
@@ -163,13 +164,19 @@ export class MaterialsPage extends Component {
           {this.state.loading ? (
             <Spinner />
           ) : (
-            <form className="materials-import" onSubmit={this.submitHandler} encType="multipart/form-data">
+            <form
+              className="materials-import"
+              onSubmit={this.submitHandler}
+              encType="multipart/form-data"
+            >
               <input
                 accept=".xlsx"
                 onChange={this.changeInputHandler}
                 type="file"
               />
-              <button type="submit" class="submit-btn">Importar materiales</button>
+              <button type="submit" class="submit-btn">
+                Importar materiales
+              </button>
             </form>
           )}
 
@@ -231,6 +238,7 @@ export class MaterialsPage extends Component {
                     data={data.materials}
                     columns={columns}
                     defaultPageSize={10}
+                    className="-highlight"
                   />
                 );
               }}
@@ -241,4 +249,5 @@ export class MaterialsPage extends Component {
     );
   }
 }
+
 export default MaterialsPage;

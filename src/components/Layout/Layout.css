@@ -1,6 +1,65 @@
 .main-content {
-    margin-top: 90px;
-    flex: 1 0 auto;
-    display: flex;
-    flex-direction: column;
+  margin-top: 90px;
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+h1 {
+  margin: 1.5rem 0;
+  padding: 1.75rem 0;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 2.5rem;
+  letter-spacing: 2px;
+  font-family: 'Oswald', sans-serif;
+}
+
+/***** Botones *********/
+button {
+  padding: 0.2rem 0.5rem;
+  border-radius: 8px;
+  border: rgb(0, 0, 0, 0.1) 2px solid;
+  margin: 0.2rem;
+  transition: all 0.1s linear;
+}
+
+button:focus {
+  outline: none;
+  border: rgb(0, 0, 0, 0.3) 2px solid;
+  opacity: 1;
+}
+
+button:hover {
+  outline: none;
+  opacity: 0.6;
+}
+
+.edit-btn {
+  color: var(--main-gray);
+  background: var(--main-blue);
+}
+
+.danger-btn {
+  color: var(--main-gray);
+  background: var(--main-red);
+}
+
+.submit-btn {
+  background: var(--main-bg-color);
+  color: var(--main-gray);
+}
+
+/***************************/
+
+.-header {
+  font-family: 'arsenal', sans-serif;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+
+.ReactTable .-pagination .-btn {
+  color: rgb(0, 0, 0);
+  background: rgba(0, 0, 0, 0.3);
 }
