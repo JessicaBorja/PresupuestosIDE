@@ -3,6 +3,9 @@ import Layout from "../../../components/Layout/Layout";
 import "./Unit.css"
 import { Query } from "react-apollo";
 import { GET_MATERIALS } from "../../Materials/constants";
+import { GET_UNITS, DELETE_UNIT,DUPLICATE_UNIT} from "./constants";
+import { withApollo } from "react-apollo";
+
 import ReactTable from "react-table";
 import Spinner from "../../../components/Spinner/Spinner";
 import { Col, Row } from "react-bootstrap"
@@ -25,111 +28,139 @@ export class UnitPage extends Component {
         }
     }
 
-    handleAdd = (addMaterial) => {
-        console.log("Add")
-        console.log(addMaterial)
-        let materials=this.state.materialsInConcept
-        console.log(materials)
-        const materialIndex = materials.findIndex(
-            material => material._id === addMaterial._id
-        );
-        console.log("found")
-        console.log(materialIndex)
-        if(materialIndex===-1){
-            swal({
-                title:"Ingresa cantidad",
-                content:'input',
-                inputValue:"valor",
-                showCancelButton:true,
-              }).then((value)=>{
-                if(!value || isNaN(Number(value)) || Number(value)<=0){
-                    swal(`Favor de ingresar un numero mayor a 0, usted ingreso: ${value}`);
-                }
-                else{
-                    addMaterial.materialQuantity=Number(value);
-                    addMaterial.subtotal=Number(value)*Number(addMaterial.unitPrice);
-                    console.log(addMaterial)
-                    materials.push(addMaterial)
-                    console.log(materials)
-                    this.setState({
-                        materialsInConcept:materials,
-                        // show:true
-                    })    
-                }
-              })
-        }
-        else{
-            swal(`Ya cuenta con ese material`);
-        }
+    searchUnits = () => {
+        this.props.client
+            .query({
+            query: GET_UNITS,
+            })
+            .then(data => {
+                console.log(data)
+            })
+            .catch(error => {
+            console.log("error", error)
+        });
     }
 
-    handleEdit=(selectedMaterial)=>{
+
+    handleDuplicate=(materialGroup)=>{
+        console.log(materialGroup)
+        console.log("duplicando")
+        materialGroup.auxMaterials=materialGroup.auxMaterials.map((aux)=>{
+            return aux._id
+        })
+        console.log(materialGroup)
+        
+        //TODO VALIDAR NO SEA CLAVE DUPLICADA
+        let detalles={}
         swal({
-            title:`Editar cantidad de: ${selectedMaterial.materialKey}`,
+            title:"Ingresa Clave",
             content:'input',
-            inputValue:"valor",
-            showCancelButton:true,
-          }).then((value)=>{
-            if(!value || isNaN(Number(value)) || Number(value)<=0){
-                swal(`Favor de ingresar un numero mayor a 0, usted ingreso: ${value}`);
+            buttons: true,
+            dangerMode: true,
+          }).then((value,isConfirm)=>{
+              console.log(isConfirm)
+            if(!value && value!=null){
+                swal(`Favor de ingresar una clave, usted ingreso: ${value}`);
+            }
+            else if(value===null){
+
             }
             else{
-                selectedMaterial.materialQuantity=value
-                selectedMaterial.subtotal=Number(value)*Number(selectedMaterial.unitPrice);
-                let materials=this.state.materialsInConcept
-                const materialIndex = materials.findIndex(
-                    material => material._id === selectedMaterial._id
-                );
-                materials[materialIndex]=selectedMaterial
-                this.setState({
-                    materialsInConcept:materials
-                  })
+                detalles.materialGroupKey=value
+                swal({
+                    title:"Ingresa descripcion",
+                    content:'input',
+                    buttons: true,
+                    dangerMode: true,
+                  }).then((value,isConfirm)=>{
+                    console.log(isConfirm)
+                  if(!value && value!=null){
+                      swal(`Favor de ingresar una descripcion, usted ingreso: ${value}`);
+                  }
+                  else if(value===null){
+
+                    }
+                  else{
+                    detalles.name=value
+                    swal({
+                        title:"Ingresa Unidad",
+                        content:'input',
+                        buttons: true,
+                        dangerMode: true,
+                      }).then((value,isConfirm)=>{
+                        console.log(isConfirm)
+                      if(!value && value!=null){
+                          swal(`Favor de ingresar una Unidad, usted ingreso: ${value}`);
+                      }
+                      else if(value===null){
+
+                    }
+                      else{
+                        detalles.measurementUnit=value
+                        detalles.auxMaterials=materialGroup.auxMaterials;
+                        detalles.id=materialGroup._id
+                        console.log(detalles)
+                        this.props.client.mutate({
+                            mutation: DUPLICATE_UNIT,
+                            variables: { ...detalles }
+                        }).then(data => {
+                            console.log(data)
+                            swal("Proceso de duplicado exitoso!", "Su informacion se ha guardado!", "success");
+                        }).catch((err) => { 
+                            console.log(err)
+                            swal("Proceso de duplicado no exitoso!", "Notificar al programador!", "error");
+
+                         })                
+                      }
+                    })
+                  }
+                })
+                // addMaterial.materialQuantity=Number(value);
+                // addMaterial.subtotal=Number(value)*Number(addMaterial.unitPrice);
+                // console.log(addMaterial)
+                // materials.push(addMaterial)
+                // console.log(materials)
+                // this.setState({
+                //     materialsInConcept:materials,
+                //     // show:true
+                // })    
             }
-        })
+          })
     }
 
-    handleDelete=(material)=>{
-        console.log(material)
-        let materials=this.state.materialsInConcept
-        let deleteMaterial=material
-        function spliceNoMutate(myArray,indexToRemove) {
-            return myArray.slice(0,indexToRemove).concat(myArray.slice(indexToRemove+1));
-          }
-        //   const { accessories } = cache.readQuery({ query: GET_ACCESSORIES });
-          const materialIndex = materials.findIndex(
-            material => material._id === deleteMaterial._id
-          );
-          console.log(materialIndex)
-          materials=spliceNoMutate(materials,materialIndex)
-          console.log(materials)
-          this.setState({
-            materialsInConcept:materials
-          })
+    handleEdit=(materialGroup)=>{
+        console.log("editando")
+        console.log(materialGroup)
+    }
 
+    handleDelete=(materialGroup)=>{
+        console.log("eliminando")
+        console.log(materialGroup)
+        this.props.client.mutate({
+            mutation: DELETE_UNIT,
+            variables: { id:materialGroup._id }
+        }).then(data => {
+            console.log(data.data.deleteMaterialGroup._id)
+            swal("Proceso de eliminado exitoso!", "Su informacion se ha removido!", "success");
+        }).catch((err) => { 
+            console.log(err)
+            swal("Proceso de eliminado no exitoso!", "Notificar al programador!", "error");
+
+         })                
+
+    }
+
+    handleUpdate=(materialGroup)=>{
+        console.log("actualizando")
+        console.log(materialGroup)
     }
 
     handleSave=()=>{
-       let condition=this.state.description===null||this.state.description.length===0
-       condition|=this.state.conceptKey==null||this.state.conceptKey.length===0
-       condition|=this.state.unit==null||this.state.unit.length===0
-       if(condition){
-            swal(`Favor de llenar los campos de cantidad, precio unitario y unidad`);
-       }
-       else if(this.state.materialsInConcept.length===null||this.state.materialsInConcept.length===0){
-            swal(`Favor de agregar por lo menos un material`);
-       }
-       else{
-            console.log(this.state.materialsInConcept)
-            let concepto={
-                descripcion:this.state.description,
-                clave:this.state.conceptKey,
-                unit:this.state.unit,
-                materiales:this.state.materialsInConcept
-            }
-         console.log(concepto)
-       }
+        this.searchUnits()
     }
 
+
+  
     handleChange = name => event => {
         this.setState({ 
             [name]: event.target.value ,
@@ -141,7 +172,7 @@ export class UnitPage extends Component {
         const columns = [
             {
             Header: "Clave",
-            accessor: "materialKey",
+            accessor: "materialGroupKey",
             Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
             filterable: true,
             filterMethod: (filter, row) =>
@@ -158,13 +189,6 @@ export class UnitPage extends Component {
             {
             Header: "Unidad",
             accessor: "measurementUnit",
-            Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-            filterMethod: (filter, row) =>
-                row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
-            },
-            {
-            Header: "Cantidad",
-            accessor: "quantity",
             Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
             filterMethod: (filter, row) =>
                 row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
@@ -182,68 +206,37 @@ export class UnitPage extends Component {
             accessor: "_id",
             Cell: row => (
                 <div>
-                <Button variant="success"
-                    data-param={row.value}
-                    onClick={() => this.handleAdd(row.original)}
-                >
-                    Agregar
-                </Button>
-                </div>
-                
-            )
-            }
-        ];
 
-        const columns2 = [
-            {
-            Header: "Clave",
-            accessor: "materialKey",
-            Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-            },
-            {
-            Header: "Nombre",
-            accessor: "name",
-            Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-            },
-            {
-            Header: "Unidad",
-            accessor: "measurementUnit",
-            Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-            },
-            {
-            Header: "Cantidad",
-            accessor: "materialQuantity",
-            Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-            filterMethod: (filter, row) =>
-                row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
-            },
-            {
-            Header: "Subtotal",
-            accessor: "subtotal",
-            // headerStyle: {textAlign: 'right'},
-            Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-            filterMethod: (filter, row) =>
-                row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
-            },
-            {
-            Header: props => <span>Operacion a realizar</span>, // Custom header components!
-            accessor: "_id",
-            Cell: row => (
-                <div>
-    
                 <Button variant="warning"
                     data-param={row.value}
                     onClick={() => this.handleEdit(row.original)}
                 >
                     Editar
                 </Button>
+
                 <Button variant="danger"
                     data-param={row.value}
                     onClick={() => this.handleDelete(row.original)}
                 >
-                    Eliminar
+                    -
                 </Button>
+
+                <Button variant="primary"
+                    data-param={row.value}
+                    onClick={() => this.handleDuplicate(row.original)}
+                >
+                    Duplicar
+                </Button>
+                
+                <Button variant="success"
+                    data-param={row.value}
+                    onClick={() => this.handleUpdate(row.original)}
+                >
+                    Actualizar
+                </Button>
+
                 </div>
+                
             )
             }
         ];
@@ -253,49 +246,18 @@ export class UnitPage extends Component {
             <Layout>
                 <div className="unit">
                 <h1>Edita Precios Unitarios</h1>
-                    <Row style={{marginBottom:"2rem",width:"90%"}}> 
-                        <Col xs={12} lg={3}>
-                            <Form.Label>Cantidad</Form.Label>
-                            <Form.Control type="email" placeholder="Clave de Concepto"
-                            onChange={this.handleChange('conceptKey')}/>    
-                        </Col>
-                        <Col xs={12} lg={3}>
-                            <Form.Label>Precio unitario</Form.Label>
-                            <Form.Control type="email" placeholder="Descripcion"
-                            onChange={this.handleChange('description')}/>    
-                        </Col>
-                        <Col xs={12} lg={3}>
-                            <Form.Label>Unidad</Form.Label>
-                            <Form.Control type="email" placeholder="unidad"
-                            onChange={this.handleChange('unit')}/>    
-                        </Col>
-                        <Col xs={12} lg={3}>
-                            <Button variant="success" onClick={this.handleSave.bind(this,this.state)}>Guardar</Button>  
-                        </Col>
-                    </Row>
-
-                    {this.state.materialsInConcept.length>0 && <div className="materials-table-cont">
-                        <ReactTable
-                            data={this.state.materialsInConcept}
-                            columns={columns2}
-                            showPaginationBottom= {false}
-                            minRows={1}
-
-                        />
-                    </div>
-                    }
-
                     <div className="materials-table-cont">
-                        <Query query={GET_MATERIALS}>
+                        <Query query={GET_UNITS}>
                             {({ loading, error, data }) => {
                             if (loading) return <Spinner />;
                             if (error) return <p>Error :( recarga la página!</p>;
                             return (
                                 <ReactTable
-                                data={data.materials}
+                                data={data.materialGroups}
                                 columns={columns}
                                 defaultPageSize={2}
-                                showPaginationBottom= {false}
+                                minRows={1}
+                                showPaginationBottom= {true}
 
                                 />
                             );
@@ -307,4 +269,4 @@ export class UnitPage extends Component {
         )
     }
 }
-export default UnitPage
+export default withApollo(UnitPage)

@@ -10,6 +10,10 @@ import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import swal from 'sweetalert';
 
+import { GET_UNITS,ADD_MATERIAL,ADD_UNIT } from "./constants";
+import { withApollo } from "react-apollo";
+let subidos=0;
+let materialesAux=[]
 
 export class UnitPage extends Component {
 
@@ -24,6 +28,67 @@ export class UnitPage extends Component {
                 materialsInConcept:[]
         }
     }
+    saveUnit=(materialGroup)=>{
+        console.log("saving")
+        console.log(materialGroup)
+        
+        this.props.client.mutate({
+            mutation: ADD_UNIT,
+            variables: { ...materialGroup }
+        }).then(data => {
+            console.log(`created material group: ${data.data.createMaterialGroup._id}`)
+            // materialesAux.push(data.data.createAuxMaterial._id)
+            // subidos++;
+            // if(this.state.materialsInConcept.length===subidos){
+            //     console.log("termine2")
+            //     console.log(materialesAux)
+            //     this.saveUnit(concepto)
+            // }
+        }).catch((err) => { console.log(err) })
+    }
+
+    addMaterial=async (materialInput,concepto)=>{
+        materialInput._id=null;
+        materialInput.totalQuantity=materialInput.quantity
+            await this.props.client.mutate({
+                mutation: ADD_MATERIAL,
+                variables: { ...materialInput }
+            }).then(data => {
+                // console.log(data.data.createAuxMaterial._id)
+                materialesAux.push(data.data.createAuxMaterial._id)
+                subidos++;
+                if(this.state.materialsInConcept.length===subidos){
+                    console.log("termine2")
+                    console.log(materialesAux)
+                    concepto.auxMaterials=materialesAux
+                    this.saveUnit(concepto)
+                }
+            }).catch((err) => { console.log(err) })
+    }
+
+    searchUnits = () => {
+        this.props.client
+            .query({
+            query: GET_UNITS,
+            })
+            .then(data => {
+                console.log(data)
+            // const foundCustomers = data.data.clients.filter(client =>
+            //     client.name.toUpperCase().includes(this.state.customer.toUpperCase()) ||
+            //     client.email.toUpperCase().includes(this.state.customer.toUpperCase()) ||
+            //     client.company.toUpperCase().includes(this.state.customer.toUpperCase()))
+            // this.setState({ foundCustomers })
+            })
+            .catch(error => {
+            console.log("error", error)
+            // if (error.graphQLErrors && error.graphQLErrors.length > 0)
+            //     console.log(`error: ${error.graphQLErrors[0].message}`)
+            // this.setState({
+            //     error: true
+            // })
+        });
+    }
+
 
     handleAdd = (addMaterial) => {
         console.log("Add")
@@ -108,7 +173,7 @@ export class UnitPage extends Component {
 
     }
 
-    handleSave=()=>{
+    handleSave= ()=>{
        let condition=this.state.description===null||this.state.description.length===0
        condition|=this.state.conceptKey==null||this.state.conceptKey.length===0
        condition|=this.state.unit==null||this.state.unit.length===0
@@ -121,13 +186,17 @@ export class UnitPage extends Component {
        else{
             console.log(this.state.materialsInConcept)
             let concepto={
-                descripcion:this.state.description,
-                clave:this.state.conceptKey,
-                unit:this.state.unit,
-                materiales:this.state.materialsInConcept
+                name:this.state.description,
+                materialGroupKey:this.state.conceptKey,
+                measurementUnit:this.state.unit,
+                auxMaterials:this.state.materialsInConcept
             }
-         console.log(concepto)
-       }
+            console.log(concepto)
+            let subidos=0;
+            concepto.auxMaterials.forEach(async (materialInput)=>{
+                this.addMaterial(materialInput,concepto)
+            })
+        }
     }
 
     handleChange = name => event => {
@@ -280,7 +349,6 @@ export class UnitPage extends Component {
                             columns={columns2}
                             showPaginationBottom= {false}
                             minRows={1}
-
                         />
                     </div>
                     }
@@ -307,4 +375,4 @@ export class UnitPage extends Component {
         )
     }
 }
-export default UnitPage
+export default withApollo(UnitPage)
