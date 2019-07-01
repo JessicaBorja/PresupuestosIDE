@@ -6,6 +6,8 @@ export const GET_CONCEPTS = gql`
       _id
       name
       measurementUnit
+      conceptKey
+      totalPrice
     }
   }
 `;

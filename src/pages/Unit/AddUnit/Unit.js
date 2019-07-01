@@ -392,7 +392,7 @@ export class UnitPage extends Component {
                                 data={data.materials}
                                 columns={columns}
                                 defaultPageSize={2}
-                                showPaginationBottom= {false}
+                                showPaginationBottom= {true}
 
                                 />
                             );

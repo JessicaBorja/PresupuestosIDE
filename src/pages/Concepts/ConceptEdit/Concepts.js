@@ -224,7 +224,7 @@ export class ConceptsPage extends Component {
             },
             {
                 Header: "Precio",
-                accessor: "unitPrice",
+                accessor: "totalPrice",
                 // headerStyle: {textAlign: 'right'},
                 Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
                 filterMethod: (filter, row) =>

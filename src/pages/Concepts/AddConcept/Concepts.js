@@ -52,6 +52,11 @@ export class ConceptsPage extends Component {
             variables: { ...objeto }
         }).then(data => {
             console.log(data.data.createConcept._id)
+            swal(
+                "Proceso de generacion exitoso!",
+                "Su concepto se ha añadido!",
+                "success"
+              );
             // console.log(`created material group: ${data.data.createMaterialGroup._id}`)
             // materialesAux.push(data.data.createAuxMaterial._id)
             // subidos++;
@@ -178,7 +183,7 @@ export class ConceptsPage extends Component {
             },
             {
                 Header: "Precio",
-                accessor: "unitPrice",
+                accessor: "totalPrice",
                 // headerStyle: {textAlign: 'right'},
                 Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
                 filterMethod: (filter, row) =>
@@ -206,17 +211,11 @@ export class ConceptsPage extends Component {
                 Header: "Clave",
                 accessor: "materialGroupKey",
                 Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-                filterable: true,
-                filterMethod: (filter, row) =>
-                    row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
             },
             {
                 Header: "Nombre",
                 accessor: "name",
                 Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-                filterable: true,
-                filterMethod: (filter, row) =>
-                    row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
             },
             {
                 Header: "Unidad",
@@ -227,7 +226,7 @@ export class ConceptsPage extends Component {
             },
             {
                 Header: "Precio",
-                accessor: "unitPrice",
+                accessor: "totalPrice",
                 // headerStyle: {textAlign: 'right'},
                 Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
                 filterMethod: (filter, row) =>
@@ -235,6 +234,14 @@ export class ConceptsPage extends Component {
             },
             {
                 Header: "Cantidad",
+                accessor: "quantity",
+                // headerStyle: {textAlign: 'right'},
+                Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+                filterMethod: (filter, row) =>
+                    row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
+            },
+            {
+                Header: "Subtotal",
                 accessor: "quantity",
                 // headerStyle: {textAlign: 'right'},
                 Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
@@ -267,7 +274,7 @@ export class ConceptsPage extends Component {
         return (
             <Layout>
                 <div className="concepts">
-                    <h1>Conceptos </h1>
+                    <h1>Genera Concepto </h1>
                     <Row style={{ marginBottom: "2rem", width: "90%" }}>
                         <Col xs={12} lg={3}>
                             <Form.Label>Clave de Concepto</Form.Label>
@@ -301,9 +308,12 @@ export class ConceptsPage extends Component {
                             columns={columns2}
                             defaultPageSize={2}
                             minRows={1}
-                            showPaginationBottom={true}
+                            showPaginationBottom={false}
                         />
                     </div>
+
+                    <h1>Agregar Precio Unitario </h1>
+
                     <div className="materials-table-cont">
                         <Query query={GET_UNITS}>
                             {({ loading, error, data }) => {
