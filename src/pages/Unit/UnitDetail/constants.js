@@ -85,3 +85,37 @@ export const GET_MATERIALS = gql`
   }
 `;
 
+
+
+export const ADD_MATERIAL = gql`
+mutation CreateAuxMaterial($name: String, $materialKey:String, $measurementUnit: String, $totalQuantity: Float, $unitPrice: Float,$totalPrice: Float,$materialQuantity:Float,$fromExcel:Boolean){
+    createAuxMaterial(auxMaterialInput: { name: $name, materialKey:$materialKey, measurementUnit: $measurementUnit,
+         totalQuantity: $totalQuantity, unitPrice: $unitPrice, materialQuantity:$materialQuantity,totalPrice:$totalPrice,fromExcel:$fromExcel}){
+          _id
+          materialKey
+          name
+          materialQuantity
+          totalQuantity
+          measurementUnit
+          unitPrice
+          totalPrice
+          fromExcel
+    }
+}
+`;
+
+
+export const UPDATE_UNIT = gql`
+mutation UpdateMaterialGroup($id:ID!,$name: String, $materialGroupKey:String!, $measurementUnit: String,$auxMaterials: [ID]){
+  updateMaterialGroup(id:$id,materialGroupInput: { name: $name, materialGroupKey:$materialGroupKey, measurementUnit: $measurementUnit,
+      auxMaterials:$auxMaterials }){
+        _id
+    }
+}
+`;
+
+// quantity: Int,
+// unitPrice: Int,
+// totalPrice: Int,
+// auxMaterials: [ID]
+// updateMaterialGroup(id: ID!, materialGroupInput: MaterialGroupInput!): MaterialGroup

@@ -37,6 +37,12 @@ export class UnitPage extends Component {
             variables: { ...materialGroup }
         }).then(data => {
             console.log(`created material group: ${data.data.createMaterialGroup._id}`)
+            swal(
+                "Proceso de generacion exitoso!",
+                "Su precio unitario se ha añadido!",
+                "success"
+              );
+    
             // materialesAux.push(data.data.createAuxMaterial._id)
             // subidos++;
             // if(this.state.materialsInConcept.length===subidos){

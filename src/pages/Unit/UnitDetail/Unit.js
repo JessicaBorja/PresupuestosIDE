@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Layout from "../../../components/Layout/Layout";
 import "./Unit.css";
 import { Query, Mutation } from "react-apollo";
-import { GET_UNIT, DELETE_MATERIAL, EDIT_MATERIAL, GET_MATERIALS } from "./constants";
+import { GET_UNIT, DELETE_MATERIAL, EDIT_MATERIAL, GET_MATERIALS, ADD_MATERIAL,UPDATE_UNIT } from "./constants";
 import { withApollo } from "react-apollo";
 
 import ReactTable from "react-table";
@@ -30,6 +30,7 @@ export class UnitPage extends Component {
   handleEdit = selectedMaterial => {
     // swal("Proceso de edicion exitoso!", "Su informacion se ha removido!", "success");
     // swal("Proceso de edicion no exitoso!", "Notificar al programador!", "error");
+    console.log(selectedMaterial)
     this.setState({
       modalShow: true,
       selectedMaterial
@@ -46,6 +47,24 @@ export class UnitPage extends Component {
       })
       .then(data => {
         // console.log(data.data.deleteMaterialGroup._id)
+        console.log(data)
+        let auxMaterials=this.state.materialGroup.auxMaterials
+        const materialIndex = auxMaterials.findIndex(
+          material => material._id === selectedMaterial._id
+        );
+        console.log(materialIndex)
+        function spliceNoMutate(myArray, indexToRemove) {
+            return myArray.slice(0, indexToRemove).concat(myArray.slice(indexToRemove + 1));
+        }
+        let newAuxMaterials = spliceNoMutate(auxMaterials, materialIndex)
+        let newMaterialGroup=this.state.materialGroup
+        newMaterialGroup.auxMaterials=newAuxMaterials
+        console.log(newMaterialGroup)
+        this.setState({
+          materialGroup: newMaterialGroup
+        })
+
+    
         swal(
           "Proceso de eliminado exitoso!",
           "Su informacion se ha removido!",
@@ -72,6 +91,50 @@ export class UnitPage extends Component {
   };
 
 
+  addMaterialDb= async (materialGroup,addMaterial)=>{
+    console.log("adding material to db")
+    console.log(materialGroup)
+    console.log(addMaterial)
+    await this.props.client.mutate({
+        mutation: ADD_MATERIAL,
+        variables: { ...addMaterial }
+    }).then(async (data) => {
+        console.log("added to db")
+        console.log(data.data.createAuxMaterial)
+        materialGroup.auxMaterials.splice(-1,1)
+        let materialGroupInDb=JSON.parse(JSON.stringify(materialGroup))
+        materialGroupInDb.auxMaterials=materialGroup.auxMaterials.map((auxMaterial)=>{
+            return auxMaterial._id
+        })
+        materialGroupInDb.auxMaterials.push(data.data.createAuxMaterial._id)
+        materialGroup.auxMaterials.push(data.data.createAuxMaterial)
+        console.log(materialGroup.auxMaterials)
+        console.log(materialGroupInDb.auxMaterials)
+        console.log("updating ")
+        console.log(materialGroup)
+        console.log(materialGroupInDb)
+
+        await this.props.client.mutate({
+              mutation: UPDATE_UNIT,
+              variables: {id:materialGroupInDb._id, ...materialGroupInDb}
+          }).then(data => {
+              console.log("added to db")
+              console.log(data)
+              swal(
+                "Proceso de adicion exitoso!",
+                "Su material se ha añadido!",
+                "success"
+              );
+              this.setState({
+                materialGroup,
+                // show:true
+              })
+          })
+    }).catch((err) => { 
+      console.log(err) 
+    })
+  }
+
   handleAdd = async (addMaterial, concepto) => {
     let materialGroup = this.state.materialGroup
     let materials = this.state.materialGroup.auxMaterials
@@ -83,21 +146,21 @@ export class UnitPage extends Component {
       swal({
         title: "Ingresa cantidad",
         content: 'input',
-        inputValue: "valor",
-        showCancelButton: true,
-      }).then((value) => {
-        if (!value || isNaN(Number(value)) || Number(value) <= 0) {
-          swal(`Favor de ingresar un numero mayor a 0, usted ingreso: ${value}`);
+        buttons: true,
+        dangerMode: true,
+    }).then((value) => {
+        if(value===null){
+        }
+        else if( isNaN(Number(value)) || Number(value) <= 0) {
+            swal(`Favor de ingresar un numero mayor a 0, usted ingreso: ${value}`);
         }
         else {
+        console.log(value)
           addMaterial.materialQuantity = Number(value);
           addMaterial.subtotal = Number(value) * Number(addMaterial.unitPrice);
           materials.push(addMaterial)
           materialGroup.auxMaterials = materials
-          this.setState({
-            materialGroup,
-            // show:true
-          })
+          this.addMaterialDb(materialGroup,addMaterial)
         }
       })
     }
@@ -128,17 +191,11 @@ export class UnitPage extends Component {
         Header: "Clave",
         accessor: "materialKey",
         Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-        filterable: true,
-        filterMethod: (filter, row) =>
-          row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
       },
       {
         Header: "Descripcion",
         accessor: "name",
         Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-        filterable: true,
-        filterMethod: (filter, row) =>
-          row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
       },
       {
         Header: "Unidad",
@@ -245,7 +302,7 @@ export class UnitPage extends Component {
     return (
       <Layout>
         <div className="unit">
-          <h1>Edita Precios Unitarios</h1>
+          <h1>Edicion de Precio Unitario: {this.state.materialGroup.materialGroupKey}</h1>
           <div className="materials-table-cont" style={{ marginBottom: "2rem" }}>
             <Query
               query={GET_UNIT}
@@ -270,6 +327,8 @@ export class UnitPage extends Component {
               }}
             </Query>
           </div>
+
+          <h1>Materiales</h1>
 
           <div className="materials-table-cont" style={{ marginBottom: "4rem" }}>
             <Query query={GET_MATERIALS}>
