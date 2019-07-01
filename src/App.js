@@ -2,7 +2,6 @@ import React, { Component } from "react";
 
 import { BrowserRouter, Route, Redirect, Switch } from "react-router-dom";
 import ScrollToTop from "./containers/ScrollToTop/ScrollToTop";
-import HomePage from "./pages/Home/Home";
 import ConceptsPage from "./pages/Concepts/AddConcept/Concepts";
 import EditConcept from "./pages/Concepts/ConceptEdit/Concepts";
 import ConceptDetail from "./pages/Concepts/ConceptDetail/Concepts";

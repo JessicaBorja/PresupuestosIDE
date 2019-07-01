@@ -56,15 +56,15 @@ mutation DeleteAuxMaterial($id:ID!){
 export const EDIT_MATERIAL = gql`
 mutation UpdateAuxMaterial($id:ID!,$unitPrice:Float,$materialQuantity:Float){
   updateAuxMaterial(id:$id,auxMaterialInput:{unitPrice:$unitPrice,materialQuantity:$materialQuantity}){
-        _id
-        materialKey
-        name
-        materialQuantity
-        totalQuantity
-        measurementUnit
-        unitPrice
-        totalPrice
-        fromExcel
+      _id
+      materialKey
+      name
+      materialQuantity
+      totalQuantity
+      measurementUnit
+      unitPrice
+      totalPrice
+      fromExcel
     }
 }
 `;
