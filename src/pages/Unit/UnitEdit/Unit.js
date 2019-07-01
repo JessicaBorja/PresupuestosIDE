@@ -2,14 +2,11 @@ import React, { Component } from 'react'
 import Layout from "../../../components/Layout/Layout";
 import "./Unit.css"
 import { Query } from "react-apollo";
-import { GET_MATERIALS } from "../../Materials/constants";
 import { GET_UNITS, DELETE_UNIT,DUPLICATE_UNIT} from "./constants";
 import { withApollo } from "react-apollo";
 
 import ReactTable from "react-table";
 import Spinner from "../../../components/Spinner/Spinner";
-import { Col, Row } from "react-bootstrap"
-import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import swal from 'sweetalert';
 
@@ -131,6 +128,7 @@ export class UnitPage extends Component {
     handleEdit=(materialGroup)=>{
         console.log("editando")
         console.log(materialGroup)
+        this.props.history.push("/unitario/"+materialGroup._id)
     }
 
     handleDelete=(materialGroup)=>{

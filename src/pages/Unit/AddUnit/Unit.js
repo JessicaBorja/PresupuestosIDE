@@ -192,7 +192,6 @@ export class UnitPage extends Component {
                 auxMaterials:this.state.materialsInConcept
             }
             console.log(concepto)
-            let subidos=0;
             concepto.auxMaterials.forEach(async (materialInput)=>{
                 this.addMaterial(materialInput,concepto)
             })
@@ -333,13 +332,18 @@ export class UnitPage extends Component {
                             <Form.Control type="email" placeholder="Descripcion"
                             onChange={this.handleChange('description')}/>    
                         </Col>
-                        <Col xs={12} lg={3}>
+                        <Col xs={12} lg={2}>
                             <Form.Label>Unidad</Form.Label>
                             <Form.Control type="email" placeholder="unidad"
                             onChange={this.handleChange('unit')}/>    
                         </Col>
-                        <Col xs={12} lg={3}>
+                        <Col xs={12} lg={2}>
                             <Button variant="success" onClick={this.handleSave.bind(this,this.state)}>Guardar</Button>  
+                        </Col>
+                        <Col xs={12} lg={2}>
+                            <Button variant="success" onClick={()=>{
+                                this.props.history.push("/consultaUnitario")
+                            }}>Edicion Unitarios</Button>  
                         </Col>
                     </Row>
 

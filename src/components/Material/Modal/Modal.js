@@ -4,7 +4,6 @@ import "./Modal.css"
 // import ProductCarousel from "../../Carousel/Carousel"
 import { Col, Row, Container } from "react-bootstrap"
 import Form from 'react-bootstrap/Form'
-import Button from 'react-bootstrap/Button'
 import  { Component } from "react";
 
 
@@ -37,8 +36,8 @@ class ProductModal extends Component {
     }
     
     render() {
-        console.log("render")
-        console.log(this.props)
+        // console.log("render")
+        // console.log(this.props)
         return (
             <Modal
                 className="product__modal"
