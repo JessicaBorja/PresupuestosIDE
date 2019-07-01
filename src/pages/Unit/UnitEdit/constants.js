@@ -7,6 +7,7 @@ export const GET_UNITS = gql`
       materialGroupKey
       measurementUnit
       name
+      totalPrice
       auxMaterials{
           _id
           name

@@ -27,6 +27,18 @@ export class UnitPage extends Component {
     };
   }
 
+  updateTotalPrice=(materialGroup,materials)=>{
+    console.log("updating")
+    console.log(materialGroup)
+    let totalPrice=0;
+    materials.forEach(auxMaterial => {
+        totalPrice += auxMaterial.totalPrice;
+    });
+    materialGroup.totalPrice=totalPrice;
+    console.log(totalPrice)
+      return materialGroup;
+}
+
   handleEdit = selectedMaterial => {
     // swal("Proceso de edicion exitoso!", "Su informacion se ha removido!", "success");
     // swal("Proceso de edicion no exitoso!", "Notificar al programador!", "error");
@@ -139,7 +151,7 @@ export class UnitPage extends Component {
     let materialGroup = this.state.materialGroup
     let materials = this.state.materialGroup.auxMaterials
     const materialIndex = materials.findIndex(
-      material => material._id === addMaterial._id
+      material => material.materialKey === addMaterial.materialKey
     );
 
     if (materialIndex === -1) {
@@ -157,12 +169,20 @@ export class UnitPage extends Component {
         else {
         console.log(value)
           addMaterial.materialQuantity = Number(value);
-          addMaterial.subtotal = Number(value) * Number(addMaterial.unitPrice);
+          addMaterial.totalPrice = Number(value) * Number(addMaterial.unitPrice);
           materials.push(addMaterial)
           materialGroup.auxMaterials = materials
           this.addMaterialDb(materialGroup,addMaterial)
         }
       })
+    }
+    else{
+      swal(
+        "Proceso de adicion no exitoso!",
+        "Su material ya existe en el precio unitario, modifique la cantidad",
+        "error"
+      );
+
     }
 
     // materialInput._id=null;
@@ -214,7 +234,7 @@ export class UnitPage extends Component {
       },
       {
         Header: "Subtotal",
-        accessor: "unitPrice",
+        accessor: "totalPrice",
         // headerStyle: {textAlign: 'right'},
         Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
       },
@@ -388,6 +408,8 @@ export class UnitPage extends Component {
                 product={this.state.selectedMaterial}
                 handleQuotation={this.handleQuotation}
                 onConfirm={editedMaterial => {
+                  editedMaterial.totalPrice = Number(editedMaterial.materialQuantity) * Number(editedMaterial.unitPrice);
+
                   // console.log(editedMaterial)
                   updateAccessory({
                     variables: {

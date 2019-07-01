@@ -7,6 +7,7 @@ export const GET_UNITS = gql`
       materialGroupKey
       measurementUnit
       name
+      totalPrice
       auxMaterials{
           _id
           name
@@ -54,8 +55,8 @@ mutation DeleteAuxMaterial($id:ID!){
 `;
 
 export const EDIT_MATERIAL = gql`
-mutation UpdateAuxMaterial($id:ID!,$unitPrice:Float,$materialQuantity:Float){
-  updateAuxMaterial(id:$id,auxMaterialInput:{unitPrice:$unitPrice,materialQuantity:$materialQuantity}){
+mutation UpdateAuxMaterial($id:ID!,$unitPrice:Float,$materialQuantity:Float,$totalPrice:Float){
+  updateAuxMaterial(id:$id,auxMaterialInput:{unitPrice:$unitPrice,materialQuantity:$materialQuantity,totalPrice:$totalPrice}){
       _id
       materialKey
       name

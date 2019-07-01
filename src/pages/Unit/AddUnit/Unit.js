@@ -13,7 +13,8 @@ import swal from 'sweetalert';
 import { GET_UNITS,ADD_MATERIAL,ADD_UNIT } from "./constants";
 import { withApollo } from "react-apollo";
 let subidos=0;
-let materialesAux=[]
+
+ 
 
 export class UnitPage extends Component {
 
@@ -28,10 +29,24 @@ export class UnitPage extends Component {
                 materialsInConcept:[]
         }
     }
+
+    updateTotalPrice=(materialGroup,materials)=>{
+        console.log("updating")
+        console.log(materialGroup)
+        let totalPrice=0;
+        materials.forEach(auxMaterial => {
+            totalPrice += auxMaterial.totalPrice;
+        });
+        materialGroup.totalPrice=totalPrice;
+        console.log(totalPrice)
+          return materialGroup;
+    }
+
     saveUnit=(materialGroup)=>{
         console.log("saving")
         console.log(materialGroup)
-        
+        materialGroup=this.updateTotalPrice(materialGroup,this.state.materialsInConcept)
+        materialGroup.auxMaterials=materialGroup.auxMaterials.map((material)=>{ return material._id})
         this.props.client.mutate({
             mutation: ADD_UNIT,
             variables: { ...materialGroup }
@@ -54,19 +69,22 @@ export class UnitPage extends Component {
     }
 
     addMaterial=async (materialInput,concepto)=>{
-        materialInput._id=null;
-        materialInput.totalQuantity=materialInput.quantity
             await this.props.client.mutate({
                 mutation: ADD_MATERIAL,
-                variables: { ...materialInput }
+                variables: { ...materialInput,
+                    materialQuantity:+materialInput.materialQuantity,
+                    totalQuantity:materialInput.quantity,
+                    _id:null
+                 }
             }).then(data => {
                 // console.log(data.data.createAuxMaterial._id)
-                materialesAux.push(data.data.createAuxMaterial._id)
+                let materials=[]
+                materials.push(data.data.createAuxMaterial)
                 subidos++;
                 if(this.state.materialsInConcept.length===subidos){
                     console.log("termine2")
-                    console.log(materialesAux)
-                    concepto.auxMaterials=materialesAux
+                    // console.log(materialesAux)
+                    concepto.auxMaterials=materials
                     this.saveUnit(concepto)
                 }
             }).catch((err) => { console.log(err) })
@@ -118,7 +136,8 @@ export class UnitPage extends Component {
                 }
                 else{
                     addMaterial.materialQuantity=Number(value);
-                    addMaterial.subtotal=Number(value)*Number(addMaterial.unitPrice);
+                    // addMaterial.subtotal=Number(value)*Number(addMaterial.unitPrice);
+                    addMaterial.totalPrice=(+addMaterial.materialQuantity)*(+addMaterial.unitPrice)
                     console.log(addMaterial)
                     materials.push(addMaterial)
                     console.log(materials)
@@ -146,7 +165,7 @@ export class UnitPage extends Component {
             }
             else{
                 selectedMaterial.materialQuantity=value
-                selectedMaterial.subtotal=Number(value)*Number(selectedMaterial.unitPrice);
+                selectedMaterial.totalPrice=Number(value)*Number(selectedMaterial.unitPrice);
                 let materials=this.state.materialsInConcept
                 const materialIndex = materials.findIndex(
                     material => material._id === selectedMaterial._id
@@ -293,7 +312,7 @@ export class UnitPage extends Component {
             },
             {
             Header: "Subtotal",
-            accessor: "subtotal",
+            accessor: "totalPrice",
             // headerStyle: {textAlign: 'right'},
             Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
             filterMethod: (filter, row) =>
