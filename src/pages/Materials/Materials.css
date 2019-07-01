@@ -8,16 +8,6 @@
   min-height: 100%;
 }
 
-.materials h1 {
-  margin: 1.5rem 0;
-  padding: 1.75rem 0;
-  text-transform: uppercase;
-  font-weight: bold;
-  font-size: 2.5rem;
-  letter-spacing: 2px;
-  font-family: 'Oswald', sans-serif;
-}
-
 .materials-import {
   margin-bottom: 2rem;
   width: 40rem;
@@ -37,34 +27,17 @@
   width: 100%;
 }
 
-button{
-  padding:0.2rem 0.5rem;
-  border-radius: 8px;
-  border: rgb(0, 0, 0, 0.1) 2px solid;
-  margin: 0.2rem;
-}
-
 .-header {
   font-family: 'arsenal', sans-serif;
   font-weight: 600;
   font-size: 1.2rem;
 }
 
-.edit-btn {
-  color: var(--main-gray);
-  background: var(--main-blue);
+/***************************/
+.mutationbtn-container{
+  display: flex;
+  justify-content: space-evenly;
 }
-
-.danger-btn {
-  color: var(--main-gray);
-  background: var(--main-red);
-}
-
-.submit-btn{
-  background: var(--main-bg-color);
-  color: var(--main-gray);
-}
-
 
 .modal-title.h4 {
   font-family: 'oswald', sans-serif;
@@ -78,6 +51,10 @@ button{
 .ReactTable .-pagination .-btn{
   color: rgb(0, 0, 0);
   background: rgba(0,0,0,0.3);
+}
+
+.input[type="file"]{
+
 }
 
 @media screen and (min-width: 600px) {
