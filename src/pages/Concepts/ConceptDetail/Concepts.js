@@ -21,7 +21,8 @@ export class ConceptsPage extends Component {
             show: false,
             id: "",
             auxMaterialGroupsInConcept: [],
-            concept: []
+            concept: [],
+            // modalShow:false
         }
     }
 
@@ -29,7 +30,42 @@ export class ConceptsPage extends Component {
     handleEdit = (selectedAuxMaterialGroup) => {
         console.log("edit")
         console.log(selectedAuxMaterialGroup)
+        swal({
+            title: "Ingresa cantidad",
+            content: 'input',
+            buttons: true,
+            dangerMode: true,
+        }).then( async (value) => {
+            if(value===null){
+            }
+            else if( isNaN(Number(value)) || Number(value) <= 0) {
+                swal(`Favor de ingresar un numero mayor a 0, usted ingreso: ${value}`);
+            }
+            else {
+                console.log(`El valor seleccionado es ${value}`)
+                selectedAuxMaterialGroup.quantity=+value
+                selectedAuxMaterialGroup.totalPrice=+value*selectedAuxMaterialGroup.unitPrice
+                console.log("modificado")
+                console.log(selectedAuxMaterialGroup)
+                let auxMaterialsGroups=this.state.concept.auxMaterialGroups
+                const materialGroupIndex = auxMaterialsGroups.findIndex(
+                  auxMaterialGroup => auxMaterialGroup._id === selectedAuxMaterialGroup._id
+                );
+                console.log(materialGroupIndex)
+                auxMaterialsGroups[materialGroupIndex]=selectedAuxMaterialGroup
+                let newConcept=this.state.concept
+                newConcept.auxMaterialsGroups=auxMaterialsGroups
+                this.setState({
+                    concept:newConcept
+                })
+      
+            }
+        })
+      
     }
+
+    handleModalClose = () => this.setState({ modalShow: false });
+
 
     handleAdd=(selectedMaterialGroup)=>{
         console.log("adding")
