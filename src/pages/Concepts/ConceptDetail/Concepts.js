@@ -40,12 +40,30 @@ export class ConceptsPage extends Component {
         const columns = [
             {
                 Header: "Nombre",
-                accessor: "name",
+                accessor: "materialGroup.name",
                 Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
                 filterable: true,
                 filterMethod: (filter, row) =>
                     row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
             },
+            {
+                Header: "Cantidad",
+                accessor: "quantity",
+                Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+                
+            },
+            {
+                Header: "Precio",
+                accessor: "unitPrice",
+                Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+            },
+
+            {
+                Header: "Subtotal",
+                accessor: "totalPrice",
+                Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+            },
+
             {
                 Header: props => <span>Operacion a realizar</span>, // Custom header components!
                 accessor: "_id",
@@ -80,8 +98,9 @@ export class ConceptsPage extends Component {
                             query={GET_CONCEPT}
                             variables={{ id: this.props.match.params.id }}
                             onCompleted={data => {
-                                console.log(data.concept.materialGroups)
-                                this.setState({ concept: data.concept.materialGroups })
+                                console.log("al terminar")
+                                console.log(data.concept.auxMaterialGroups)
+                                this.setState({ concept: data.concept.auxMaterialGroups })
                             }}
                         >
                             {({ loading, error, data }) => {

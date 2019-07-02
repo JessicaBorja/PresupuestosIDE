@@ -77,7 +77,7 @@ export class ConceptsPage extends Component {
                     conceptKey: this.state.conceptKey,
                     name: this.state.description,
                     measurementUnit: this.state.unit,
-                    auxMaterialGroups: newMaterialGroups
+                    auxMaterialGroups: newMaterialGroups.map((materialGroup)=>{return materialGroup._id})
                 }
                 console.log(objeto)
                 console.log("new material groups")
@@ -135,6 +135,8 @@ export class ConceptsPage extends Component {
                 );
                 console.log(materialGroupIndex)
                 materialGroups[materialGroupIndex].quantity = value
+                materialGroups[materialGroupIndex].totalPrice=(+value)*(+materialGroups[materialGroupIndex].unitPrice)
+
                 this.setState({
                     materialGroupsInConcept: materialGroups
                 })

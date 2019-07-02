@@ -138,17 +138,17 @@ export class MaterialsPage extends Component {
         Header: props => <span>Operacion a realizar</span>, // Custom header components!
         accessor: "_id",
         Cell: row => (
-          <div class="mutationbtn-container">
+          <div className="mutationbtn-container">
             <button
               data-param={row.value}
               onClick={() => this.handleEdit(row.original, this)}
-              class="edit-btn"
+              className="edit-btn"
             >
               Edit
             </button>
             <button
               onClick={() => this.handleDelete.bind(this, row.original)}
-              class="danger-btn"
+              className="danger-btn"
             >
               Delete
             </button>

@@ -11,10 +11,13 @@ query Concept($id:ID!)
         price
         auxMaterialGroups{
           _id
-          materialGroup
           quantity
           unitPrice
           totalPrice
+          materialGroup{
+            _id
+            name
+          }
         }
       }
     }    
