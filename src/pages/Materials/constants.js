@@ -9,14 +9,14 @@ export const GET_MATERIALS = gql`
       name
       quantity
       unitPrice
-      fromExcel
       totalPrice
+      fromExcel
     }
   }
 `;
 
 export const EDIT_MATERIAL = gql`
-  mutation UpdateAccessory($id: ID!, $name: String, $materialKey:String, $measurementUnit: String, $quantity: Float, $unitPrice: Float,$totalPrice: Float ) {
+  mutation UpdateMaterial($id: ID!, $name: String, $materialKey:String, $measurementUnit: String, $quantity: Float, $unitPrice: Float,$totalPrice: Float ) {
     updateMaterial(
       id: $id, 
       materialInput: { name: $name, materialKey:$materialKey, measurementUnit: $measurementUnit, quantity: $quantity, unitPrice: $unitPrice, totalPrice:$totalPrice}
@@ -28,9 +28,28 @@ export const EDIT_MATERIAL = gql`
       quantity
       unitPrice
       totalPrice
+      fromExcel
     }
   }
 `;
+
+export const ADD_MATERIAL = gql`
+  mutation AddMaterial($name: String, $materialKey: String, $measurementUnit: String, 
+    $quantity: Float, $unitPrice: Float, $totalPrice: Float, $fromExcel: Boolean ) {
+    createMaterial(materialInput: { name: $name, materialKey: $materialKey, measurementUnit: $measurementUnit, 
+      quantity: $quantity, unitPrice: $unitPrice, totalPrice: $totalPrice, fromExcel: $fromExcel}) {
+      _id
+      materialKey
+      measurementUnit
+      name
+      quantity
+      unitPrice
+      totalPrice
+      fromExcel
+    }
+  }
+`;
+
 
 // mutation UpdateAccessory($id: ID!, $name: String!, $code:String!, $totalQuantity: Int, $currentQuantity: Int, $deleted: Boolean) {
 //   updateAccessory(

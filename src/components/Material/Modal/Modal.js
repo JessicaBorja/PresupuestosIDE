@@ -1,46 +1,45 @@
 import React from 'react';
 import Modal from "react-bootstrap/Modal";
 import "./Modal.css"
-// import ProductCarousel from "../../Carousel/Carousel"
 import { Col, Row, Container } from "react-bootstrap"
 import Form from 'react-bootstrap/Form'
-import  { Component } from "react";
+import { Component } from "react";
 
-
-// import Link from "react-router-dom/Link"
-class ProductModal extends Component {  
+class MaterialModal extends Component {
     constructor(props) {
         super(props);
-        this.state = { 
-        quantity:null,
-        unitPrice:null,
-        totalPrice:null,
-        measurementUnit:"",
-        id:""
-    }
-        // console.log(props)
+        let materialKey = "";
+        let name = "";
+        let quantity = 0;
+        let unitPrice = 0;
+        let totalPrice = 0;
+        let measurementUnit = "";
+        let id = "";
 
-    }
-// const ProductModal = (props) => {
-    handleSave=(material,stuff)=>{
-        console.log("save")
-        console.log(this.state)
-        // this.setState({ price: true });
-
+        if (props.material) {
+            if (props.material.materialKey) materialKey = props.material.materialKey;
+            if (props.material.name) name = props.material.name;
+            if (props.material.quantity) quantity = props.material.quantity;
+            if (props.material.unitPrice) unitPrice = props.material.unitPrice;
+            if (props.material.totalPrice) totalPrice = props.material.totalPrice;
+            if (props.material.measurementUnit) measurementUnit = props.material.measurementUnit;
+            if (props.material._id) id = props.material._id;
+        }
+        this.state = {
+            materialKey, name, quantity, unitPrice, totalPrice, measurementUnit, id
+        }
     }
 
     handleChange = name => event => {
-        this.setState({ [name]: event.target.value ,
-            id:this.props.product._id
+        this.setState({
+            [name]: event.target.value,
         });
     }
-    
+
     render() {
-        // console.log("render")
-        // console.log(this.props)
         return (
             <Modal
-                className="product__modal"
+                className="material__modal"
                 show={this.props.show}
                 onHide={this.props.onHide}
                 size="lg"
@@ -49,49 +48,52 @@ class ProductModal extends Component {
             >
                 <Modal.Header closeButton>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        {this.props.product.name}
+                        {this.props.material ? "Editar Material" : "Añadir Material"}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Container fluid>
                         <Row>
                             <Col xs={12} lg={6}>
+                                <Form.Label>Clave</Form.Label>
+                                <Form.Control type="text" value={this.state.materialKey}
+                                    onChange={this.handleChange('materialKey')} />
+                            </Col>
+                            <Col xs={12} lg={6}>
+                                <Form.Label>Nombre</Form.Label>
+                                <Form.Control type="text" value={this.state.name}
+                                    onChange={this.handleChange('name')} />
+                            </Col>
+                            <Col xs={12} lg={6}>
                                 <Form.Label>Cantidad</Form.Label>
-                                <Form.Control type="email" placeholder={this.props.product.quantity} 
-                                onChange={this.handleChange('quantity')}/>    
+                                <Form.Control type="text" value={this.state.quantity}
+                                    onChange={this.handleChange('quantity')} />
                             </Col>
                             <Col xs={12} lg={6}>
                                 <Form.Label>Precio unitario</Form.Label>
-                                <Form.Control type="email" placeholder={this.props.product.unitPrice} 
-                                onChange={this.handleChange('unitPrice')}/>    
+                                <Form.Control type="text" value={this.state.unitPrice}
+                                    onChange={this.handleChange('unitPrice')} />
                             </Col>
-                        </Row>
-                        <Row>
                             <Col xs={12} lg={6}>
                                 <Form.Label>Precio total</Form.Label>
-                                <Form.Control type="email" placeholder={this.props.product.totalPrice} 
-                                onChange={this.handleChange('totalPrice')}/>    
+                                <Form.Control type="text" value={this.state.totalPrice}
+                                    onChange={this.handleChange('totalPrice')} />
                             </Col>
                             <Col xs={12} lg={6}>
                                 <Form.Label>Unidad</Form.Label>
-                                <Form.Control type="email" placeholder={this.props.product.measurementUnit}
-                                onChange={this.handleChange('measurementUnit')}/>    
+                                <Form.Control type="text" value={this.state.measurementUnit}
+                                    onChange={this.handleChange('measurementUnit')} />
                             </Col>
                         </Row>
                         <Row className="modal_buttons-container">
-                            <button className="edit-btn" onClick={this.props.onConfirm.bind(this,this.state)}>Guardar</button>  
+                            <button className="edit-btn" onClick={this.props.onConfirm.bind(this, this.state)}>Guardar</button>
                             <button className="danger-btn">Cancelar</button>
                         </Row>
                     </Container>
                 </Modal.Body >
-                <Modal.Footer>
-                    {/* <Link to="/cotizacion">
-                        <button onClick={props.handleQuotation} className="btn btn-main">Solicita cotización</button>
-                    </Link> */}
-                </Modal.Footer>
             </Modal >
         )
-    }   
+    }
 }
 
-export default ProductModal
+export default MaterialModal

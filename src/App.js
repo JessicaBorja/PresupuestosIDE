@@ -13,6 +13,7 @@ import UnitDetail from "./pages/Unit/UnitDetail/Unit";
 
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
+  faPlus,
   faHome,
   faChevronLeft,
   faMapMarkerAlt,
@@ -38,16 +39,10 @@ const client = new ApolloClient({
 class App extends Component {
   render() {
     library.add([
-      faFacebook,
-      faLinkedin,
-      faSearch,
-      faHome,
-      faWindowClose,
-      faChevronLeft,
-      faMapMarkerAlt,
-      faChevronCircleLeft,
-      faChevronCircleRight,
-      faWhatsapp
+      faFacebook, faLinkedin, faSearch, faHome,
+      faWindowClose, faChevronLeft, faMapMarkerAlt,
+      faChevronCircleLeft, faChevronCircleRight, faWhatsapp,
+      faPlus
     ]);
 
     return (
@@ -60,7 +55,7 @@ class App extends Component {
               <Route path="/ConsultaConcepto" component={EditConcept} />
               <Route path="/presupuestos" component={BudgetPage} />
               <Route path="/conceptos" component={ConceptsPage} />
-              
+
               <Route path="/unitario/:id" component={UnitDetail} />
               <Route path="/unitario" component={UnitPage} />
               <Route path="/ConsultaUnitario" component={EditPage} />

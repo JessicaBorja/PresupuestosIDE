@@ -2,21 +2,31 @@ import React, { Component } from "react";
 import Layout from "../../components/Layout/Layout";
 import Spinner from "../../components/Spinner/Spinner";
 import "./Materials.css";
-// react table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
-// import { Table } from "react-bootstrap";
 import { Query, Mutation } from "react-apollo";
-import { GET_MATERIALS, EDIT_MATERIAL } from "./constants";
-// https://codesandbox.io/s/0pp97jnrvv
-// https://www.npmjs.com/package/react-table
-// https://react-bootstrap.github.io/components/forms/
-
+import { GET_MATERIALS, EDIT_MATERIAL, ADD_MATERIAL } from "./constants";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MaterialModal from "../../components/Material/Modal/Modal";
-// import import ProductModal from "../../../components/Product/Modal/Modal"
 
 export class MaterialsPage extends Component {
-  state = { file: null, selectedMaterial: {} };
+  state = {
+    addModalShow: false,
+    file: null,
+    selectedMaterial: { _id: "" }
+  };
+
+  handleAddModalOpen = () => {
+    this.setState({
+      addModalShow: true,
+    });
+  };
+
+  handleAddModalClose = () => {
+    this.setState({
+      addModalShow: false,
+    });
+  };
 
   submitHandler = async event => {
     event.preventDefault();
@@ -79,16 +89,12 @@ export class MaterialsPage extends Component {
     this.setState({ file });
   };
 
-  handleEdit = (material, stuff) => {
-    // console.log("edit")
-    // console.log(material)
-    // console.log(stuff)
-    // console.log(this.getAttribute('data-param'));
 
+
+  handleEdit = (material, stuff) => {
     this.setState({
       modalShow: true,
       selectedMaterial: material
-      // selectedProduct: product
     });
   };
 
@@ -173,21 +179,59 @@ export class MaterialsPage extends Component {
           {this.state.loading ? (
             <Spinner />
           ) : (
-            <form
-              className="materials-import"
-              onSubmit={this.submitHandler}
-              encType="multipart/form-data"
-            >
-              <input
-                accept=".xlsx"
-                onChange={this.changeInputHandler}
-                type="file"
-              />
-              <button type="submit" className="submit-btn">
-                Importar materiales
+              <form
+                className="materials-import"
+                onSubmit={this.submitHandler}
+                encType="multipart/form-data"
+              >
+                <input
+                  accept=".xlsx"
+                  onChange={this.changeInputHandler}
+                  type="file"
+                />
+                <button type="submit" className="submit-btn">
+                  Importar materiales
               </button>
-            </form>
-          )}
+              </form>
+            )}
+
+          <div style={{ position: 'fixed', top: 110, right: 20, zIndex: 10 }}>
+            <button className="submit-btn" onClick={this.handleAddModalOpen}>
+              <FontAwesomeIcon icon={['fas', 'plus']} size={"2x"} />
+            </button>
+          </div>
+
+          {/* ADD */}
+          <Mutation
+            mutation={ADD_MATERIAL}
+            update={(cache, { data: { addMaterial } }) => {
+              let { materials } = cache.readQuery({ query: GET_MATERIALS });
+              materials.push(addMaterial);
+              cache.writeQuery({
+                query: GET_MATERIALS,
+                data: { materials }
+              });
+            }}
+          >
+            {addMaterial => (
+              <MaterialModal
+                show={this.state.addModalShow}
+                onHide={this.handleAddModalClose}
+                onConfirm={(material) => {
+                  addMaterial({
+                    variables: {
+                      ...material,
+                      totalPrice: +material.totalPrice,
+                      unitPrice: +material.unitPrice,
+                      quantity: +material.quantity,
+                      fromExcel: false
+                    }
+                  });
+                  this.setState({ addModalShow: false });
+                }}
+              />
+            )}
+          </Mutation>
 
           {/* EDIT */}
           <Mutation
@@ -220,16 +264,18 @@ export class MaterialsPage extends Component {
           >
             {updateMaterial => (
               <MaterialModal
+                key={this.state.selectedMaterial._id}
                 show={this.state.modalShow}
                 onHide={this.handleModalClose}
-                product={this.state.selectedMaterial}
-                handleQuotation={this.handleQuotation}
-                onConfirm={(material, stuff) => {
-                  material.totalPrice = +material.totalPrice;
-                  material.unitPrice = +material.unitPrice;
-                  material.quantity = +material.quantity;
+                material={this.state.selectedMaterial}
+                onConfirm={(material) => {
                   updateMaterial({
-                    variables: { ...material }
+                    variables: {
+                      ...material,
+                      totalPrice: +material.totalPrice,
+                      unitPrice: +material.unitPrice,
+                      quantity: +material.quantity,
+                    }
                   });
                   this.setState({ modalShow: false });
                 }}
@@ -254,7 +300,7 @@ export class MaterialsPage extends Component {
             </Query>
           </div>
         </div>
-      </Layout>
+      </Layout >
     );
   }
 }

@@ -1,6 +1,5 @@
 import React from "react";
 import "./Footer.css";
-// import logoAstra from "../../../assets/images/logos/logo-astra-blanco.png"
 
 const Footer = () => {
   return (
@@ -12,7 +11,6 @@ const Footer = () => {
       <div className="footer__dev">
         <p>Desarrollado por:
           <a href="http://oscarrosete.com/" target="_blank" rel="noopener noreferrer" >
-            {/* <img height={22} src={logoAstra} alt="logo AstraDev" /> */}
             {" Oscar Rosete "}
           </a>
         </p>
