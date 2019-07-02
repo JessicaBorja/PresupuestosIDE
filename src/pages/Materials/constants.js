@@ -9,6 +9,7 @@ export const GET_MATERIALS = gql`
       name
       quantity
       unitPrice
+      fromExcel
       totalPrice
     }
   }

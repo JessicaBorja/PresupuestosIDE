@@ -101,6 +101,15 @@ export class MaterialsPage extends Component {
   render() {
     const columns = [
       {
+        Header: "Original",
+        accessor: "fromExcel",
+        filterable: true,
+        filterMethod: (filter, row) =>
+          (!row[filter.id]).toString().toLowerCase().includes(filter.value.toLowerCase()),
+        Cell: row => <div style={{ textAlign: "center" }}>{(!row.value).toString()}</div>
+      },
+
+      {
         Header: "Clave",
         accessor: "materialKey",
         filterable: true,
@@ -174,7 +183,7 @@ export class MaterialsPage extends Component {
                 onChange={this.changeInputHandler}
                 type="file"
               />
-              <button type="submit" class="submit-btn">
+              <button type="submit" className="submit-btn">
                 Importar materiales
               </button>
             </form>
