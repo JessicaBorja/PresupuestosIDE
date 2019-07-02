@@ -3,7 +3,7 @@ import Layout from "../../../components/Layout/Layout";
 import "./Concepts.css"
 
 import { Query } from "react-apollo";
-import { GET_UNITS, ADD_CONCEPT } from "./constants";
+import { GET_UNITS, ADD_CONCEPT, CREATE_AUXMATGROUP } from "./constants";
 import { withApollo } from "react-apollo";
 
 import ReactTable from "react-table";
@@ -13,6 +13,8 @@ import swal from 'sweetalert';
 
 import { Col, Row } from "react-bootstrap"
 import Form from 'react-bootstrap/Form'
+let uploaded=0;
+let newMaterialGroups = []
 
 export class ConceptsPage extends Component {
     constructor(props) {
@@ -27,45 +29,88 @@ export class ConceptsPage extends Component {
         }
     }
 
+    updateTotalPrice=(materialGroup,materials)=>{
+        console.log("updating")
+        console.log(materialGroup)
+        let totalPrice=0;
+        materials.forEach(auxMaterial => {
+            totalPrice += auxMaterial.totalPrice;
+        });
+        materialGroup.price=totalPrice;
+        console.log(totalPrice)
+          return materialGroup;
+    }
+
+
     handleChange = name => event => {
         this.setState({
             [name]: event.target.value,
         });
     }
 
-    handleSave = () => {
-        console.log("grabando")
-        let newMaterialGroups = this.state.materialGroupsInConcept.map((materialGroup) => {
-            return materialGroup._id
-        })
-        console.log(newMaterialGroups)
-        let objeto = {
-            conceptKey: this.state.conceptKey,
-            name: this.state.description,
-            measurementUnit: this.state.unit,
-            materialGroups: newMaterialGroups
+    addMaterialToDb=async (materialGroup)=>{
+
+        let auxMaterialGroupInput={
+            materialGroup:materialGroup._id,
+            quantity:+materialGroup.quantity,
+            unitPrice:materialGroup.unitPrice,
+            totalPrice:materialGroup.totalPrice,
         }
-        console.log(objeto)
-        // $conceptKey: String!, $measurementUnit:String, $name: String,$materialGroups:[ID]     
-        this.props.client.mutate({
-            mutation: ADD_CONCEPT,
-            variables: { ...objeto }
+        console.log("materialgroup")
+        console.log(auxMaterialGroupInput)
+        await this.props.client.mutate({
+            mutation: CREATE_AUXMATGROUP,
+            variables:{
+                ...auxMaterialGroupInput
+            }
         }).then(data => {
-            console.log(data.data.createConcept._id)
-            swal(
-                "Proceso de generacion exitoso!",
-                "Su concepto se ha añadido!",
-                "success"
-              );
-            // console.log(`created material group: ${data.data.createMaterialGroup._id}`)
-            // materialesAux.push(data.data.createAuxMaterial._id)
-            // subidos++;
-            // if(this.state.materialsInConcept.length===subidos){
-            //     console.log("termine2")
-            //     console.log(materialesAux)
-            //     this.saveUnit(concepto)
-            // }
-        }).catch((err) => { console.log(err) })
+            console.log(data)
+            console.log(data.data.createAuxMaterialGroup)
+            newMaterialGroups.push(data.data.createAuxMaterialGroup)
+            // this.state.materialGroupsInConcept.map((materialGroup) => {
+            //     return materialGroup._id
+            // })
+            uploaded++;
+            if(this.state.materialGroupsInConcept.length===uploaded){
+                console.log("se cargaron todos")
+                let objeto = {
+                    conceptKey: this.state.conceptKey,
+                    name: this.state.description,
+                    measurementUnit: this.state.unit,
+                    auxMaterialGroups: newMaterialGroups
+                }
+                console.log(objeto)
+                console.log("new material groups")
+                console.log(newMaterialGroups)
+                console.log(this.updateTotalPrice(objeto,newMaterialGroups))
+                objeto=this.updateTotalPrice(objeto,newMaterialGroups)
+                console.log("enviado a db")
+                console.log(objeto)
+                //     concepto.auxMaterials=materials
+                //     this.saveUnit(concepto)
+                this.props.client.mutate({
+                    mutation: ADD_CONCEPT,
+                    variables: { ...objeto }
+                }).then(data => {
+                    console.log(data.data.createConcept._id)
+                    swal(
+                        "Proceso de generacion exitoso!",
+                        "Su concepto se ha añadido!",
+                        "success"
+                      );
+                }).catch((err) => { console.log(err) })
+            }
+        }).catch((err) => { console.log(err) })    
+    }
+    
+    handleSave =  () => {
+        console.log("antes")
+        console.log(this.state.materialGroupsInConcept)
+
+        console.log("grabando")
+        this.state.materialGroupsInConcept.forEach(async (materialGroup)=>{
+            await this.addMaterialToDb(materialGroup)
+        })
     }
 
     handleEdit = (selectedMaterialGroup) => {
@@ -139,6 +184,10 @@ export class ConceptsPage extends Component {
                 else {
                     console.log(value)
                     addConcept.quantity = value
+                    addConcept.unitPrice=+addConcept.totalPrice
+                    addConcept.totalPrice=(+value)*(+addConcept.unitPrice)
+                    console.log("addConcept")
+                    console.log(addConcept)
                     materialGroups.push(addConcept)
                     this.setState({ materialGroupsInConcept: materialGroups })
                     // addMaterial.materialQuantity=Number(value);
@@ -226,7 +275,7 @@ export class ConceptsPage extends Component {
             },
             {
                 Header: "Precio",
-                accessor: "totalPrice",
+                accessor: "unitPrice",
                 // headerStyle: {textAlign: 'right'},
                 Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
                 filterMethod: (filter, row) =>
@@ -242,7 +291,7 @@ export class ConceptsPage extends Component {
             },
             {
                 Header: "Subtotal",
-                accessor: "quantity",
+                accessor: "totalPrice",
                 // headerStyle: {textAlign: 'right'},
                 Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
                 filterMethod: (filter, row) =>

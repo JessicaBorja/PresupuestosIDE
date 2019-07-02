@@ -43,12 +43,29 @@ mutation CreateMaterialGroupCopy($id:ID!,$materialGroupKey: String!, $measuremen
 // createMaterialGroupCopy(id: ID!, materialGroupInput: MaterialGroupInput!): MaterialGroup
 
 export const ADD_CONCEPT= gql`
-mutation CreateConcept($conceptKey: String!, $measurementUnit:String, $name: String,$materialGroups:[ID]){
-  createConcept(conceptInput: { conceptKey: $conceptKey, measurementUnit:$measurementUnit, name: $name,materialGroups:$materialGroups}){
+mutation CreateConcept($conceptKey: String!, $measurementUnit:String, $name: String,$auxMaterialGroups:[ID],$price:Float){
+  createConcept(conceptInput: { conceptKey: $conceptKey, measurementUnit:$measurementUnit,name: $name,price:$price,auxMaterialGroups:$auxMaterialGroups}){
         _id
     }
 }
 `;
+
+export const CREATE_AUXMATGROUP= gql`
+  mutation CreateAuxMaterialGroup($materialGroup:ID!,$quantity: Float, $unitPrice:Float, $totalPrice: Float){
+    createAuxMaterialGroup(auxMaterialGroupInput: { materialGroup: $materialGroup, quantity:$quantity, unitPrice: $unitPrice,totalPrice:$totalPrice}){
+          _id
+          quantity
+          unitPrice
+          totalPrice
+      }
+    }
+`;
+
+// createAuxMaterialGroup(AuxMaterialGroupInput: AuxMaterialGroupInput!): AuxMaterialGroup
+// materialGroup: ID!,
+// quantity: Float,
+// unitPrice: Float,
+// totalPrice: Float,
 
 // createConcept(conceptInput: ConceptInput!): Concept
 // {

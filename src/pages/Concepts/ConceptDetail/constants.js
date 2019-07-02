@@ -6,9 +6,15 @@ query Concept($id:ID!)
       concept(id: $id){
         _id
         name
-        materialGroups{
+        measurementUnit
+        conceptKey
+        price
+        auxMaterialGroups{
           _id
-          name
+          materialGroup
+          quantity
+          unitPrice
+          totalPrice
         }
       }
     }    

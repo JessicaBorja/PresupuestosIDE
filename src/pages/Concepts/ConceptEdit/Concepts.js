@@ -27,6 +27,19 @@ export class ConceptsPage extends Component {
         }
     }
 
+    updateTotalPrice=(materialGroup,materials)=>{
+        console.log("updating")
+        console.log(materialGroup)
+        let totalPrice=0;
+        materials.forEach(auxMaterial => {
+            totalPrice += auxMaterial.totalPrice;
+        });
+        materialGroup.totalPrice=totalPrice;
+        console.log(totalPrice)
+          return materialGroup;
+    }
+
+
     handleChange = name => event => {
         this.setState({
             [name]: event.target.value,
@@ -224,7 +237,7 @@ export class ConceptsPage extends Component {
             },
             {
                 Header: "Precio",
-                accessor: "totalPrice",
+                accessor: "price",
                 // headerStyle: {textAlign: 'right'},
                 Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
                 filterMethod: (filter, row) =>

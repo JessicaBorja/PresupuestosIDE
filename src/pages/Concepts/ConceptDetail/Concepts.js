@@ -86,6 +86,7 @@ export class ConceptsPage extends Component {
                         >
                             {({ loading, error, data }) => {
                                 console.log("CONCEPTO")
+                                console.log(data.concept)
                                 if (loading) return <Spinner />;
                                 if (error) return <p>Error :( recarga la página!</p>;
                                 return (
