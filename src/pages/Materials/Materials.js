@@ -107,27 +107,56 @@ export class MaterialsPage extends Component {
   render() {
     const columns = [
       {
-        Header: "Original",
+        Header: "Origen",
         accessor: "fromExcel",
         filterable: true,
         filterMethod: (filter, row) =>
           (!row[filter.id]).toString().toLowerCase().includes(filter.value.toLowerCase()),
-        Cell: row => <div style={{ textAlign: "center" }}>{(!row.value).toString()}</div>
+        Cell: row => 
+        <div style={{ textAlign: "center" }}>
+        {row.value?"ContPaq":"Originales"}
+        </div>
       },
       // CONTPAQ
       {
         Header: "Clave",
         accessor: "materialKey",
         filterable: true,
-        filterMethod: (filter, row) =>
-          row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
+        filterMethod: (filter, row) =>{
+          if(row[filter.id]===null){
+            if("indefinido".includes(filter.value)){
+              console.log(row[filter.id])
+              return(true)
+            }
+          }
+          else{
+            return(row[filter.id].toLowerCase().includes(filter.value.toLowerCase()))
+          }
+        },
+        Cell: row => 
+        <div style={{ textAlign: "center" }}>
+        {row.value===null?"indefinido":row.value}
+        </div>  
       },
       {
         Header: "Nombre",
         accessor: "name",
         filterable: true,
-        filterMethod: (filter, row) =>
-          row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
+        filterMethod: (filter, row) =>{
+          if(row[filter.id]===null){
+            if("indefinido".includes(filter.value)){
+              console.log(row[filter.id])
+              return(true)
+            }
+          }
+          else{
+            return(row[filter.id].toLowerCase().includes(filter.value.toLowerCase()))
+          }
+        },
+        Cell: row => 
+        <div style={{ textAlign: "center" }}>
+        {row.value===null?"indefinido":row.value}
+        </div>  
       },
       {
         Header: "Unidad",

@@ -49,7 +49,8 @@ export class UnitPage extends Component {
         materialGroup.auxMaterials=materialGroup.auxMaterials.map((material)=>{ return material._id})
         this.props.client.mutate({
             mutation: ADD_UNIT,
-            variables: { ...materialGroup }
+            variables: { ...materialGroup },
+            refetchQueries:[{ query: GET_UNITS }]
         }).then(data => {
             console.log(`created material group: ${data.data.createMaterialGroup._id}`)
             swal(
@@ -235,40 +236,58 @@ export class UnitPage extends Component {
             {
             Header: "Clave",
             accessor: "materialKey",
-            Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
             filterable: true,
-            filterMethod: (filter, row) =>
-                row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
+            filterMethod: (filter, row) =>{
+                if(row[filter.id]===null){
+                  if("indefinido".includes(filter.value)){
+                    console.log(row[filter.id])
+                    return(true)
+                  }
+                }
+                else{
+                  return(row[filter.id].toLowerCase().includes(filter.value.toLowerCase()))
+                }
+              },
+            Cell: row => 
+              <div style={{ textAlign: "center" }}>
+              {row.value===null?"indefinido":row.value}
+              </div>  
             },
             {
             Header: "Nombre",
             accessor: "name",
-            Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
             filterable: true,
-            filterMethod: (filter, row) =>
-                row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
+            filterMethod: (filter, row) =>{
+                if(row[filter.id]===null){
+                  if("indefinido".includes(filter.value)){
+                    console.log(row[filter.id])
+                    return(true)
+                  }
+                }
+                else{
+                  return(row[filter.id].toLowerCase().includes(filter.value.toLowerCase()))
+                }
+              },
+            Cell: row => 
+              <div style={{ textAlign: "center" }}>
+              {row.value===null?"indefinido":row.value}
+              </div>  
             },
             {
             Header: "Unidad",
             accessor: "measurementUnit",
             Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-            filterMethod: (filter, row) =>
-                row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
             },
             {
             Header: "Cantidad",
             accessor: "quantity",
             Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-            filterMethod: (filter, row) =>
-                row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
             },
             {
             Header: "Precio",
             accessor: "unitPrice",
             // headerStyle: {textAlign: 'right'},
             Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
-            filterMethod: (filter, row) =>
-                row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
             },
             {
             Header: props => <span>Operacion a realizar</span>, // Custom header components!
