@@ -114,7 +114,7 @@ export class MaterialsPage extends Component {
           (!row[filter.id]).toString().toLowerCase().includes(filter.value.toLowerCase()),
         Cell: row => <div style={{ textAlign: "center" }}>{(!row.value).toString()}</div>
       },
-
+      // CONTPAQ
       {
         Header: "Clave",
         accessor: "materialKey",
