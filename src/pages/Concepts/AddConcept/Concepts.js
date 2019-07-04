@@ -29,6 +29,9 @@ export class ConceptsPage extends Component {
         }
     }
 
+    componentDidMount=()=>{
+        console.log("================pagina Agregar conceptos")
+    }
     updateTotalPrice=(materialGroup,materials)=>{
         console.log("updating")
         console.log(materialGroup)
@@ -353,7 +356,7 @@ export class ConceptsPage extends Component {
                         </Col>
                     </Row>
 
-                    <div className="materials-table-cont" style={{ marginBottom: "2rem" }}>
+                    {this.state.materialGroupsInConcept.length>0 &&<div className="materials-table-cont" style={{ marginBottom: "2rem" }}>
                         <ReactTable
                             data={this.state.materialGroupsInConcept}
                             columns={columns2}
@@ -362,7 +365,7 @@ export class ConceptsPage extends Component {
                             showPaginationBottom={true}
                         />
                     </div>
-
+                    }
                     <h1>Agregar Precio Unitario </h1>
 
                     <div className="materials-table-cont">

@@ -3,7 +3,7 @@ import Layout from "../../../components/Layout/Layout";
 import "./Concepts.css"
 
 import { Query } from "react-apollo";
-import { GET_CONCEPT,DELETE_AUXMATGROUP,GET_AUXMATGROUPS,CREATE_AUXMATGROUP,GET_CONCEPTS } from "./constants";
+import { GET_CONCEPT,DELETE_AUXMATGROUP,GET_AUXMATGROUPS,CREATE_AUXMATGROUP,UPDATE_CONCEPT,UPDATE_AUXMAT } from "./constants";
 import { withApollo } from "react-apollo";
 
 import ReactTable from "react-table";
@@ -22,11 +22,14 @@ export class ConceptsPage extends Component {
             id: "",
             auxMaterialGroupsInConcept: [],
             concept: [],
+            materialGroups:[]
             // modalShow:false
         }
     }
 
-
+    componentDidMount=()=>{
+        console.log("================pagina Detalle de conceptos")
+    }
     handleEdit = (selectedAuxMaterialGroup) => {
         console.log("edit")
         console.log(selectedAuxMaterialGroup)
@@ -47,18 +50,48 @@ export class ConceptsPage extends Component {
                 selectedAuxMaterialGroup.totalPrice=+value*selectedAuxMaterialGroup.unitPrice
                 console.log("modificado")
                 console.log(selectedAuxMaterialGroup)
-                let auxMaterialsGroups=this.state.concept.auxMaterialGroups
+                let auxMaterialsGroups=JSON.parse(JSON.stringify(this.state.concept.auxMaterialGroups))
                 const materialGroupIndex = auxMaterialsGroups.findIndex(
                   auxMaterialGroup => auxMaterialGroup._id === selectedAuxMaterialGroup._id
                 );
                 console.log(materialGroupIndex)
                 auxMaterialsGroups[materialGroupIndex]=selectedAuxMaterialGroup
                 let newConcept=this.state.concept
-                newConcept.auxMaterialsGroups=auxMaterialsGroups
-                this.setState({
-                    concept:newConcept
-                })
-      
+                newConcept.auxMaterialGroups=auxMaterialsGroups
+                console.log("concepto editado enviado a db")
+                console.log(newConcept)
+                this.props.client.mutate({
+                    mutation: UPDATE_AUXMAT,
+                    variables: { id:selectedAuxMaterialGroup._id,
+                        ...selectedAuxMaterialGroup,
+                        materialGroup:selectedAuxMaterialGroup.materialGroup._id
+                    }
+                }).then(data => {
+                    console.log(data.data.updateAuxMaterialGroup)
+                    this.setState({concept:newConcept})
+                    swal(
+                        "Proceso de actualizacion exitoso!",
+                        "Su concepto se ha modificado!",
+                        "success"
+                      );
+                }).catch((err) => { console.log(err) })
+            //     this.props.client.mutate({
+            //         mutation: UPDATE_CONCEPT,
+            //         variables: { id:newConcept._id,
+            //             ...newConcept,
+            //             auxMaterialGroups:newConcept.auxMaterialGroups.map((auxMaterialGroup)=>{
+            //                 return(auxMaterialGroup._id)
+            //             })
+            //         }
+            //     }).then(data => {
+            //         console.log(data.data.updateConcept._id)
+            //         this.setState({concept:newConcept})
+            //         swal(
+            //             "Proceso de actualizacion exitoso!",
+            //             "Su concepto se ha modificado!",
+            //             "success"
+            //           );
+            //     }).catch((err) => { console.log(err) })
             }
         })
       
@@ -70,7 +103,9 @@ export class ConceptsPage extends Component {
     handleAdd=(selectedMaterialGroup)=>{
         console.log("adding")
         console.log(selectedMaterialGroup)
-        let auxMaterialGroups = this.state.concept.auxMaterialGroups
+        // let auxMaterialGroups = this.state.concept.auxMaterialGroups
+        let auxMaterialGroups=JSON.parse(JSON.stringify(this.state.concept.auxMaterialGroups))
+
         // let materials = this.state.materialGroup.auxMaterials
         console.log("busqueda de index")
         console.log(`seleccionado: ${selectedMaterialGroup.materialGroupKey}`)
@@ -111,7 +146,36 @@ export class ConceptsPage extends Component {
                     ...selectedAuxMaterialGroup
                 }
             }).then(data => {
+                console.log("material generado")
                 console.log(data.data.createAuxMaterialGroup)
+                let newConcept=JSON.parse(JSON.stringify(this.state.concept))
+                // console.log("conceptoantes")
+                // console.log(this.state.concept)
+                let newAuxMaterialsGroups=JSON.parse(JSON.stringify(this.state.concept.auxMaterialGroups))
+                newAuxMaterialsGroups.push(data.data.createAuxMaterialGroup)
+                newConcept.auxMaterialGroups=newAuxMaterialsGroups
+                console.log("nuevos auxmaterials")
+                console.log(newAuxMaterialsGroups)
+                console.log("concepto generado enviado a db")
+                console.log(newConcept)
+                this.props.client.mutate({
+                    mutation: UPDATE_CONCEPT,
+                    variables: { id:newConcept._id,
+                        ...newConcept,
+                        auxMaterialGroups:newConcept.auxMaterialGroups.map((auxMaterialGroup)=>{
+                            return(auxMaterialGroup._id)
+                        })
+                    }
+                }).then(data => {
+                    console.log(data.data.updateConcept._id)
+                    this.setState({concept:newConcept})
+                    swal(
+                        "Proceso de actualizacion exitoso!",
+                        "Su concepto se ha modificado!",
+                        "success"
+                      );
+                }).catch((err) => { console.log(err) })
+
                 // console.log(data.data.createAuxMaterialGroup)
                 // newMaterialGroups.push(data.data.createAuxMaterialGroup)
                 // // uploaded++;
@@ -321,16 +385,16 @@ export class ConceptsPage extends Component {
                                 console.log("CONCEPTO")
                                 // console.log(data)
                                 // console.log(data.concept)
-                                // console.log(this.state.concept)
+                                console.log(this.state.concept)
                                 if (loading) return <Spinner />;
                                 if (error) return <p>Error :( recarga la página!</p>;
                                 return (
                                     <ReactTable
                                         data={this.state.concept.auxMaterialGroups}
                                         columns={columns}
-                                        defaultPageSize={2}
+                                        defaultPageSize={4}
                                         minRows={0}
-                                        showPaginationBottom={false}
+                                        showPaginationBottom={true}
 
                                     />
                                 );
@@ -344,10 +408,10 @@ export class ConceptsPage extends Component {
                         <Query
                             query={GET_AUXMATGROUPS}
                             onCompleted={data => {
-                                console.log("al terminar")
+                                console.log("al terminar auxMaterialsGroupsInDb")
                                 console.log(data)
                                 // console.log(data.concept.auxMaterialGroups)
-                                // this.setState({ concept: data.concept })
+                                this.setState({ materialGroups: data.materialGroups})
                             }}
                         >
                             {({ loading, error, data }) => {
@@ -359,7 +423,7 @@ export class ConceptsPage extends Component {
                                 if (error) return <p>Error :( recarga la página!</p>;
                                 return (
                                     <ReactTable
-                                        data={data.materialGroups}
+                                        data={this.state.materialGroups}
                                         columns={columns2}
                                         defaultPageSize={2}
                                         minRows={0}

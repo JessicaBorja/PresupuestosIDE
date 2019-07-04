@@ -27,6 +27,9 @@ export class ConceptsPage extends Component {
         }
     }
 
+    componentDidMount=()=>{
+        console.log("================pagina Edicion de conceptos")
+    }
     updateTotalPrice=(materialGroup,materials)=>{
         console.log("updating")
         console.log(materialGroup)
@@ -170,9 +173,9 @@ export class ConceptsPage extends Component {
         this.props.history.push("/concepto/" + concept._id)
     }
 
-    handleDuplicate = (concept) => {
-        console.log("duplicar")
-        console.log(concept)
+    handleDuplicate = (selectedConcept) => {
+    console.log("duplicar")
+    console.log(selectedConcept)
             //TODO VALIDAR NO SEA CLAVE DUPLICADA
     let detalles = {};
     swal({
@@ -186,7 +189,7 @@ export class ConceptsPage extends Component {
         swal(`Favor de ingresar una clave, usted ingreso: ${value}`);
       } else if (value === null) {
       } else {
-        detalles.materialGroupKey = value;
+        detalles.conceptKey = value;
         swal({
           title: "Ingresa descripcion",
           content: "input",
@@ -211,31 +214,32 @@ export class ConceptsPage extends Component {
               } else if (value === null) {
               } else {
                 // let materialGroup
-                // detalles.measurementUnit = value;
-                // detalles.auxMaterialGroups = materialGroup.auxMaterialGroups;
-                // detalles.id =materialGroup._id;
-                // console.log(detalles);
-                // this.props.client
-                //   .mutate({
-                //     mutation: DUPLICATE_CONCEPT,
-                //     variables: { ...detalles }
-                //   })
-                //   .then(data => {
-                //     console.log(data);
-                //     swal(
-                //       "Proceso de duplicado exitoso!",
-                //       "Su informacion se ha guardado!",
-                //       "success"
-                //     );
-                //   })
-                //   .catch(err => {
-                //     console.log(err);
-                //     swal(
-                //       "Proceso de duplicado no exitoso!",
-                //       "Notificar al programador!",
-                //       "error"
-                //     );
-                //   });
+            detalles.measurementUnit = value;
+            detalles.id =selectedConcept._id;
+            console.log(detalles);
+                this.props.client
+                  .mutate({
+                    mutation: DUPLICATE_CONCEPT,
+                    variables: { ...detalles },
+                    refetchQueries:[{ query: GET_CONCEPTS }]
+                  })
+                  .then(data => {
+                    console.log(data);
+                    console.log(data.data.createConceptCopy)
+                    swal(
+                      "Proceso de duplicado exitoso!",
+                      "Su informacion se ha guardado!",
+                      "success"
+                    );
+                  })
+                  .catch(err => {
+                    console.log(err);
+                    swal(
+                      "Proceso de duplicado no exitoso!",
+                      "Notificar al programador!",
+                      "error"
+                    );
+                  });
               }
             });
           }

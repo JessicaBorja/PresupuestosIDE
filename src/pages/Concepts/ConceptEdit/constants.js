@@ -30,8 +30,8 @@ mutation DeleteMaterialGroup($id:ID!){
 `;
 
 export const DUPLICATE_CONCEPT = gql`
-mutation CreateConceptCopy($id:ID!,$conceptKey: String!, $measurementUnit:String, $name: String,$auxMaterialGroups:[ID]){
-  createConceptCopy(id:$id,materialGroupInput: { conceptKey: $conceptKey, measurementUnit:$measurementUnit, name: $name,auxMaterialGroups:$auxMaterialGroups}){
+mutation CreateConceptCopy($id:ID!,$conceptKey: String!, $measurementUnit:String, $name: String){
+  createConceptCopy(id:$id,conceptInput: { conceptKey: $conceptKey, measurementUnit:$measurementUnit, name: $name}){
       _id
   }
 }

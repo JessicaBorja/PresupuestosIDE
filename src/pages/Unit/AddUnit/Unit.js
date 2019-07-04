@@ -395,8 +395,9 @@ export class UnitPage extends Component {
                         <ReactTable
                             data={this.state.materialsInConcept}
                             columns={columns2}
-                            showPaginationBottom= {false}
+                            defaultPageSize={4}
                             minRows={1}
+                            showPaginationBottom={true}
                         />
                     </div>
                     }
@@ -410,9 +411,9 @@ export class UnitPage extends Component {
                                 <ReactTable
                                 data={data.materials}
                                 columns={columns}
-                                defaultPageSize={2}
-                                showPaginationBottom= {true}
-
+                                defaultPageSize={4}
+                                minRows={1}
+                                showPaginationBottom={true}
                                 />
                             );
                             }}

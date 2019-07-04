@@ -72,10 +72,35 @@ export const GET_AUXMATGROUPS = gql`
 export const CREATE_AUXMATGROUP= gql`
   mutation CreateAuxMaterialGroup($materialGroup:ID!,$quantity: Float, $unitPrice:Float, $totalPrice: Float){
     createAuxMaterialGroup(auxMaterialGroupInput: { materialGroup: $materialGroup, quantity:$quantity, unitPrice: $unitPrice,totalPrice:$totalPrice}){
+        _id
+        quantity
+        unitPrice
+        totalPrice
+        materialGroup{
           _id
-          quantity
-          unitPrice
-          totalPrice
+          name
+          materialGroupKey
+        }
       }
     }
+`;
+export const UPDATE_CONCEPT= gql`
+mutation UpdateConcept($id:ID!,$conceptKey: String!, $measurementUnit:String, $name: String, $price:Float,$auxMaterialGroups: [ID]){
+  updateConcept(id:$id,conceptInput: { conceptKey: $conceptKey, measurementUnit:$measurementUnit, name: $name,price:$price,auxMaterialGroups:$auxMaterialGroups}){
+    _id
+  }
+}
+`;
+export const UPDATE_AUXMAT= gql`
+mutation UpdateAuxMaterialGroup($id:ID!,$materialGroup: ID!, $quantity:Float, $unitPrice: Float, $totalPrice:Float){
+  updateAuxMaterialGroup(id:$id,auxMaterialGroupInput: { materialGroup: $materialGroup, quantity:$quantity, unitPrice: $unitPrice,totalPrice:$totalPrice}){
+    _id
+    materialGroup{
+      _id
+    }
+    quantity
+    unitPrice
+    totalPrice
+  }
+}
 `;

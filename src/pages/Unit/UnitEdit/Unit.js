@@ -253,7 +253,9 @@ export class UnitPage extends Component {
           <div className="materials-table-cont">
             <Query query={GET_UNITS}>
               {({ loading, error, data }) => {
-                  console.log(data.materialGroups)
+                console.log(data)
+                  // console.log(data.materialGroups)
+
                 if (loading) return <Spinner />;
                 if (error) return <p>Error :( recarga la página!</p>;
 
