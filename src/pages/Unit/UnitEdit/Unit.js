@@ -135,7 +135,8 @@ export class UnitPage extends Component {
     this.props.client
       .mutate({
         mutation: DELETE_UNIT,
-        variables: { id: materialGroup._id }
+        variables: { id: materialGroup._id },
+        refetchQueries:[{ query: GET_UNITS }]
       })
       .then(data => {
         console.log(data.data.deleteMaterialGroup._id);
