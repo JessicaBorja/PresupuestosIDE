@@ -29,13 +29,20 @@ mutation DeleteMaterialGroup($id:ID!){
 }
 `;
 
-export const DUPLICATE_UNIT = gql`
-mutation CreateMaterialGroupCopy($id:ID!,$materialGroupKey: String!, $measurementUnit:String, $name: String,$auxMaterials:[ID]){
-    createMaterialGroupCopy(id:$id,materialGroupInput: { materialGroupKey: $materialGroupKey, measurementUnit:$measurementUnit, name: $name,auxMaterials:$auxMaterials}){
-        _id
-    }
+export const DUPLICATE_CONCEPT = gql`
+mutation CreateConceptCopy($id:ID!,$conceptKey: String!, $measurementUnit:String, $name: String,$auxMaterialGroups:[ID]){
+  createConceptCopy(id:$id,materialGroupInput: { conceptKey: $conceptKey, measurementUnit:$measurementUnit, name: $name,auxMaterialGroups:$auxMaterialGroups}){
+      _id
+  }
 }
 `;
+// createConceptCopy(id: ID!, conceptInput: ConceptInput!): Concept
+// conceptKey: String!,
+// measurementUnit: String,
+// name: String
+// price: Float,
+// auxMaterialGroups: [ID]
+
 
 // createMaterialGroupCopy(id: ID!, materialGroupInput: MaterialGroupInput!): MaterialGroup
 

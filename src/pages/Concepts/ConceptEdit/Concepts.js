@@ -3,7 +3,7 @@ import Layout from "../../../components/Layout/Layout";
 import "./Concepts.css"
 
 import { Query } from "react-apollo";
-import { GET_CONCEPTS, ADD_CONCEPT, DELETE_CONCEPT } from "./constants";
+import { GET_CONCEPTS, ADD_CONCEPT, DELETE_CONCEPT,DUPLICATE_CONCEPT} from "./constants";
 import { withApollo } from "react-apollo";
 
 import ReactTable from "react-table";
@@ -173,6 +173,75 @@ export class ConceptsPage extends Component {
     handleDuplicate = (concept) => {
         console.log("duplicar")
         console.log(concept)
+            //TODO VALIDAR NO SEA CLAVE DUPLICADA
+    let detalles = {};
+    swal({
+      title: "Ingresa Clave",
+      content: "input",
+      buttons: true,
+      dangerMode: true
+    }).then((value, isConfirm) => {
+      console.log(isConfirm);
+      if (!value && value != null) {
+        swal(`Favor de ingresar una clave, usted ingreso: ${value}`);
+      } else if (value === null) {
+      } else {
+        detalles.materialGroupKey = value;
+        swal({
+          title: "Ingresa descripcion",
+          content: "input",
+          buttons: true,
+          dangerMode: true
+        }).then((value, isConfirm) => {
+          console.log(isConfirm);
+          if (!value && value != null) {
+            swal(`Favor de ingresar una descripcion, usted ingreso: ${value}`);
+          } else if (value === null) {
+          } else {
+            detalles.name = value;
+            swal({
+              title: "Ingresa Unidad",
+              content: "input",
+              buttons: true,
+              dangerMode: true
+            }).then((value, isConfirm) => {
+              console.log(isConfirm);
+              if (!value && value != null) {
+                swal(`Favor de ingresar una Unidad, usted ingreso: ${value}`);
+              } else if (value === null) {
+              } else {
+                // let materialGroup
+                // detalles.measurementUnit = value;
+                // detalles.auxMaterialGroups = materialGroup.auxMaterialGroups;
+                // detalles.id =materialGroup._id;
+                // console.log(detalles);
+                // this.props.client
+                //   .mutate({
+                //     mutation: DUPLICATE_CONCEPT,
+                //     variables: { ...detalles }
+                //   })
+                //   .then(data => {
+                //     console.log(data);
+                //     swal(
+                //       "Proceso de duplicado exitoso!",
+                //       "Su informacion se ha guardado!",
+                //       "success"
+                //     );
+                //   })
+                //   .catch(err => {
+                //     console.log(err);
+                //     swal(
+                //       "Proceso de duplicado no exitoso!",
+                //       "Notificar al programador!",
+                //       "error"
+                //     );
+                //   });
+              }
+            });
+          }
+
+    })
+}})
     }
 
     handleDelete = (selectedConcept) => {
@@ -182,7 +251,8 @@ export class ConceptsPage extends Component {
         this.props.client
             .mutate({
                 mutation: DELETE_CONCEPT,
-                variables: { id: selectedConcept._id }
+                variables: { id: selectedConcept._id },
+                refetchQueries:[{ query: GET_CONCEPTS }]
             })
             .then(data => {
                 // console.log(data.data.deleteMaterialGroup._id)

@@ -3,7 +3,7 @@ import Layout from "../../../components/Layout/Layout";
 import "./Concepts.css"
 
 import { Query } from "react-apollo";
-import { GET_UNITS, ADD_CONCEPT, CREATE_AUXMATGROUP } from "./constants";
+import { GET_UNITS, ADD_CONCEPT, CREATE_AUXMATGROUP,GET_CONCEPTS } from "./constants";
 import { withApollo } from "react-apollo";
 
 import ReactTable from "react-table";
@@ -49,7 +49,6 @@ export class ConceptsPage extends Component {
     }
 
     addMaterialToDb=async (materialGroup)=>{
-
         let auxMaterialGroupInput={
             materialGroup:materialGroup._id,
             quantity:+materialGroup.quantity,
@@ -62,7 +61,7 @@ export class ConceptsPage extends Component {
             mutation: CREATE_AUXMATGROUP,
             variables:{
                 ...auxMaterialGroupInput
-            }
+            },
         }).then(data => {
             console.log(data)
             console.log(data.data.createAuxMaterialGroup)
@@ -90,7 +89,8 @@ export class ConceptsPage extends Component {
                 //     this.saveUnit(concepto)
                 this.props.client.mutate({
                     mutation: ADD_CONCEPT,
-                    variables: { ...objeto }
+                    variables: { ...objeto },
+                    refetchQueries:[{ query: GET_CONCEPTS }]
                 }).then(data => {
                     console.log(data.data.createConcept._id)
                     swal(
@@ -357,9 +357,9 @@ export class ConceptsPage extends Component {
                         <ReactTable
                             data={this.state.materialGroupsInConcept}
                             columns={columns2}
-                            defaultPageSize={2}
+                            defaultPageSize={4}
                             minRows={1}
-                            showPaginationBottom={false}
+                            showPaginationBottom={true}
                         />
                     </div>
 
@@ -374,7 +374,7 @@ export class ConceptsPage extends Component {
                                     <ReactTable
                                         data={data.materialGroups}
                                         columns={columns}
-                                        defaultPageSize={2}
+                                        defaultPageSize={4}
                                         minRows={1}
                                         showPaginationBottom={true}
 

@@ -24,6 +24,18 @@ query Concept($id:ID!)
     }    
 `;
 
+export const GET_CONCEPTS = gql`
+  {
+    concepts {
+      _id
+      name
+      measurementUnit
+      conceptKey
+      price
+    }
+  }
+`;
+
 // deleteAuxMaterialGroup(id: ID!): AuxMaterialGroup 
 export const DELETE_AUXMATGROUP = gql`
 mutation DeleteAuxMaterialGroup($id:ID!){

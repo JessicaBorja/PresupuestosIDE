@@ -23,6 +23,17 @@ export const GET_UNITS = gql`
   }
 `;
 
+export const GET_CONCEPTS = gql`
+  {
+    concepts {
+      _id
+      name
+      measurementUnit
+      conceptKey
+      price
+    }
+  }
+`;
 
 export const DELETE_UNIT = gql`
 mutation DeleteMaterialGroup($id:ID!){

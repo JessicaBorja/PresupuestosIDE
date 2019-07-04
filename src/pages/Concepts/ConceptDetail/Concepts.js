@@ -3,7 +3,7 @@ import Layout from "../../../components/Layout/Layout";
 import "./Concepts.css"
 
 import { Query } from "react-apollo";
-import { GET_CONCEPT,DELETE_AUXMATGROUP,GET_AUXMATGROUPS,CREATE_AUXMATGROUP } from "./constants";
+import { GET_CONCEPT,DELETE_AUXMATGROUP,GET_AUXMATGROUPS,CREATE_AUXMATGROUP,GET_CONCEPTS } from "./constants";
 import { withApollo } from "react-apollo";
 
 import ReactTable from "react-table";
@@ -168,7 +168,7 @@ export class ConceptsPage extends Component {
         this.props.client
         .mutate({
           mutation: DELETE_AUXMATGROUP,
-          variables: { id: selectedAuxMaterialGroup._id }
+          variables: { id: selectedAuxMaterialGroup._id },
         })
         .then(data => {
             console.log("borrado")
