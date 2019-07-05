@@ -287,7 +287,7 @@ export class UnitPage extends Component {
             Header: "Precio",
             accessor: "unitPrice",
             // headerStyle: {textAlign: 'right'},
-            Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+            Cell: row => <div style={{ textAlign: "center" }}>${row.value}</div>,
             },
             {
             Header: props => <span>Operacion a realizar</span>, // Custom header components!
@@ -333,7 +333,7 @@ export class UnitPage extends Component {
             Header: "Subtotal",
             accessor: "totalPrice",
             // headerStyle: {textAlign: 'right'},
-            Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+            Cell: row => <div style={{ textAlign: "center" }}>${row.value}</div>,
             filterMethod: (filter, row) =>
                 row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
             },
@@ -367,12 +367,12 @@ export class UnitPage extends Component {
                     <h1>Agrega Precios Unitarios</h1>
                     <Row style={{marginBottom:"2rem",width:"90%"}}> 
                         <Col xs={12} lg={3}>
-                            <Form.Label>Cantidad</Form.Label>
+                            <Form.Label>Clave</Form.Label>
                             <Form.Control type="email" placeholder="Clave de Concepto"
                             onChange={this.handleChange('conceptKey')}/>    
                         </Col>
                         <Col xs={12} lg={3}>
-                            <Form.Label>Precio unitario</Form.Label>
+                            <Form.Label>Nombre/descripción </Form.Label>
                             <Form.Control type="email" placeholder="Descripcion"
                             onChange={this.handleChange('description')}/>    
                         </Col>
