@@ -1,0 +1,69 @@
+.budget {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    background: var(--main-gray);
+    min-height: 100%;
+    position: relative;
+}
+
+.budgetsContainer {
+    width: 80%;
+    padding: 0 2rem 2rem 2rem;
+    margin-left: 20%;
+}
+
+.budget-content {
+    display: flex;
+    width: 100%;
+}
+
+.side-buttons {
+    display: flex;
+    position: fixed;
+    flex-direction: column;
+    width: 19%;
+    margin: 1rem;
+    padding: 1rem;
+    left: 0;
+    top: 20vh;
+    justify-content: space-evenly;
+    height: 20vh;
+    background: rgba(117, 117, 117, 0.15);
+    border-radius: 20px;
+}
+
+.import-buttons {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 1rem;
+}
+.parent{
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+  }
+  
+  .child{
+    width: 10%;
+    box-sizing: border-box;
+    padding: 0.5rem 1rem;
+    margin-left: 1rem;
+    background:rgb(100, 11, 11);
+    color:white;
+  }
+  .child2{
+    width: 10%;
+    box-sizing: border-box;
+    padding: 0.5rem 1rem;
+    margin-left: 1rem;
+    background:var(--main-bg-color);
+    color:white;
+  }
+  .controlEspecial{
+    background:rgb(100, 11, 11);
+    border:none;
+  }

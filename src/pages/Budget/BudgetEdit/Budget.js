@@ -4,10 +4,10 @@ import React, { Component } from "react";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 
-import Layout from "../../components/Layout/Layout";
+import Layout from "../../../components/Layout/Layout";
 import "./Budget.css";
 
-import BudgetModal from "../../components/Budget/Modal/Modal";
+import BudgetModal from "../../../components/Budget/Modal/Modal";
 
 const range = len => {
   const arr = [];
