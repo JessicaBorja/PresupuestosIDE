@@ -4,6 +4,7 @@ import "./Unit.css";
 import { Query, Mutation } from "react-apollo";
 import { GET_UNIT, DELETE_MATERIAL, EDIT_MATERIAL, GET_MATERIALS, ADD_MATERIAL,UPDATE_UNIT } from "./constants";
 import { withApollo } from "react-apollo";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import ReactTable from "react-table";
 import Spinner from "../../../components/Spinner/Spinner";
@@ -236,7 +237,7 @@ export class UnitPage extends Component {
         Header: "Subtotal",
         accessor: "totalPrice",
         // headerStyle: {textAlign: 'right'},
-        Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
+        Cell: row => <div style={{ textAlign: "center" }}>${row.value.toFixed(2)}</div>
       },
       {
         Header: props => <span>Operacion a realizar</span>, // Custom header components!
@@ -248,7 +249,7 @@ export class UnitPage extends Component {
               data-param={row.value}
               onClick={() => this.handleEdit(row.original)}
             >
-              Editar
+              <FontAwesomeIcon icon={['fa', 'edit']} size={"1x"}/>
             </Button>
 
             <Button
@@ -256,7 +257,7 @@ export class UnitPage extends Component {
               data-param={row.value}
               onClick={() => this.handleDelete(row.original)}
             >
-              Eliminar
+              <FontAwesomeIcon icon={['fa', 'trash']} size={"1x"}/>
             </Button>
           </div>
         )
@@ -335,7 +336,7 @@ export class UnitPage extends Component {
               data-param={row.value}
               onClick={() => this.handleAdd(row.original)}
             >
-              Agregar
+              <FontAwesomeIcon icon={['fa', 'plus']} size={"1x"}/>
             </Button>
           </div>
 
@@ -384,7 +385,7 @@ export class UnitPage extends Component {
                     data={data.materials}
                     columns={columns2}
                     defaultPageSize={5}
-                    showPaginationBottom={false}
+                    showPaginationBottom={true}
 
                   />
                 );

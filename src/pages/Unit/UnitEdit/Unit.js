@@ -9,6 +9,7 @@ import ReactTable from "react-table";
 import Spinner from "../../../components/Spinner/Spinner";
 import Button from "react-bootstrap/Button";
 import swal from "sweetalert";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export class UnitPage extends Component {
   constructor(props) {
@@ -110,15 +111,6 @@ export class UnitPage extends Component {
             });
           }
         });
-        // addMaterial.materialQuantity=Number(value);
-        // addMaterial.subtotal=Number(value)*Number(addMaterial.unitPrice);
-        // console.log(addMaterial)
-        // materials.push(addMaterial)
-        // console.log(materials)
-        // this.setState({
-        //     materialsInConcept:materials,
-        //     // show:true
-        // })
       }
     });
   };
@@ -132,28 +124,38 @@ export class UnitPage extends Component {
   handleDelete = materialGroup => {
     console.log("eliminando");
     console.log(materialGroup);
-    this.props.client
-      .mutate({
-        mutation: DELETE_UNIT,
-        variables: { id: materialGroup._id },
-        refetchQueries:[{ query: GET_UNITS }]
-      })
-      .then(data => {
-        console.log(data.data.deleteMaterialGroup._id);
-        swal(
-          "Proceso de eliminado exitoso!",
-          "Su informacion se ha removido!",
-          "success"
-        );
-      })
-      .catch(err => {
-        console.log(err);
-        swal(
-          "Proceso de eliminado no exitoso!",
-          "Notificar al programador!",
-          "error"
-        );
-      });
+    swal({
+      title: "¿Estás seguro de que deseas eliminar?",
+      buttons: true,
+      dangerMode: true,
+    }).then( async (value) => {
+        if(value===null){
+        }
+        else {
+          this.props.client
+          .mutate({
+            mutation: DELETE_UNIT,
+            variables: { id: materialGroup._id },
+            refetchQueries:[{ query: GET_UNITS }]
+          })
+          .then(data => {
+            console.log(data.data.deleteMaterialGroup._id);
+            swal(
+              "Proceso de eliminado exitoso!",
+              "Su informacion se ha removido!",
+              "success"
+            );
+          })
+          .catch(err => {
+            console.log(err);
+            swal(
+              "Proceso de eliminado no exitoso!",
+              "Notificar al programador!",
+              "error"
+            );
+          });    
+        }
+    })
   };
 
   handleUpdate = materialGroup => {
@@ -200,7 +202,7 @@ export class UnitPage extends Component {
         Header: "Precio",
         accessor: "totalPrice",
         // headerStyle: {textAlign: 'right'},
-        Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+        Cell: row => <div style={{ textAlign: "center" }}>${row.value.toFixed(2)}</div>,
         filterMethod: (filter, row) =>
           row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
       },
@@ -214,7 +216,8 @@ export class UnitPage extends Component {
               data-param={row.value}
               onClick={() => this.handleEdit(row.original)}
             >
-              Editar
+              <FontAwesomeIcon icon={['fa', 'edit']} size={"1x"}/>
+
             </Button>
 
             <Button
@@ -222,15 +225,16 @@ export class UnitPage extends Component {
               data-param={row.value}
               onClick={() => this.handleDelete(row.original)}
             >
-              -
+              <FontAwesomeIcon icon={['fa', 'trash']} size={"1x"}/>
             </Button>
 
             <Button
               variant="primary"
               data-param={row.value}
               onClick={() => this.handleDuplicate(row.original)}
+              style={{fontWeight:"bolder"}}
             >
-              Duplicar
+              x2
             </Button>
 
             <Button
@@ -238,7 +242,7 @@ export class UnitPage extends Component {
               data-param={row.value}
               onClick={() => this.handleUpdate(row.original)}
             >
-              Actualizar
+              <FontAwesomeIcon icon={['fa', 'sync']} size={"1x"}/>
             </Button>
           </div>
         )

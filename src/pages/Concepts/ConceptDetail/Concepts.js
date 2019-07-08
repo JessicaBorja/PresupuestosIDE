@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Layout from "../../../components/Layout/Layout";
 import "./Concepts.css"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Query } from "react-apollo";
 import { GET_CONCEPT,DELETE_AUXMATGROUP,GET_AUXMATGROUPS,CREATE_AUXMATGROUP,UPDATE_CONCEPT,UPDATE_AUXMAT } from "./constants";
@@ -229,43 +230,52 @@ export class ConceptsPage extends Component {
     handleDelete = (selectedAuxMaterialGroup) => {
         console.log("borrar")
         console.log(selectedAuxMaterialGroup)
-        this.props.client
-        .mutate({
-          mutation: DELETE_AUXMATGROUP,
-          variables: { id: selectedAuxMaterialGroup._id },
-        })
-        .then(data => {
-            console.log("borrado")
-          console.log(data.data.deleteAuxMaterialGroup)
-          let auxMaterialsGroups=this.state.concept.auxMaterialGroups
-          const materialGroupIndex = auxMaterialsGroups.findIndex(
-            auxMaterialGroup => auxMaterialGroup._id === selectedAuxMaterialGroup._id
-          );
-          console.log(materialGroupIndex)
-          function spliceNoMutate(myArray, indexToRemove) {
-              return myArray.slice(0, indexToRemove).concat(myArray.slice(indexToRemove + 1));
-          }
-          let newConcept=this.state.concept
-          let newAuxMaterialsGroups = spliceNoMutate(auxMaterialsGroups, materialGroupIndex)
-          newConcept.auxMaterialGroups=newAuxMaterialsGroups
-          console.log(newAuxMaterialsGroups)
-          this.setState({
-            concept: newConcept
-          })
-          swal(
-            "Proceso de eliminado exitoso!",
-            "Su informacion se ha removido!",
-            "success"
-          );
-        })
-        .catch(err => {
-          swal(
-            "Proceso de eliminado no exitoso!",
-            "Notificar al programador!",
-            "error"
-          );
-        });
-  
+        swal({
+            title: "¿Estás seguro de que deseas eliminar?",
+            buttons: true,
+            dangerMode: true,
+          }).then( async (value) => {
+              if(value===null){
+              }
+              else {
+                this.props.client
+                .mutate({
+                  mutation: DELETE_AUXMATGROUP,
+                  variables: { id: selectedAuxMaterialGroup._id },
+                })
+                .then(data => {
+                    console.log("borrado")
+                  console.log(data.data.deleteAuxMaterialGroup)
+                  let auxMaterialsGroups=this.state.concept.auxMaterialGroups
+                  const materialGroupIndex = auxMaterialsGroups.findIndex(
+                    auxMaterialGroup => auxMaterialGroup._id === selectedAuxMaterialGroup._id
+                  );
+                  console.log(materialGroupIndex)
+                  function spliceNoMutate(myArray, indexToRemove) {
+                      return myArray.slice(0, indexToRemove).concat(myArray.slice(indexToRemove + 1));
+                  }
+                  let newConcept=this.state.concept
+                  let newAuxMaterialsGroups = spliceNoMutate(auxMaterialsGroups, materialGroupIndex)
+                  newConcept.auxMaterialGroups=newAuxMaterialsGroups
+                  console.log(newAuxMaterialsGroups)
+                  this.setState({
+                    concept: newConcept
+                  })
+                  swal(
+                    "Proceso de eliminado exitoso!",
+                    "Su informacion se ha removido!",
+                    "success"
+                  );
+                })
+                .catch(err => {
+                  swal(
+                    "Proceso de eliminado no exitoso!",
+                    "Notificar al programador!",
+                    "error"
+                  );
+                });
+              }
+        })        
     }
 
     render() {
@@ -293,7 +303,7 @@ export class ConceptsPage extends Component {
             {
                 Header: "Subtotal",
                 accessor: "totalPrice",
-                Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+                Cell: row => <div style={{ textAlign: "center" }}>${row.value.toFixed(2)}</div>,
             },
 
             {
@@ -305,14 +315,14 @@ export class ConceptsPage extends Component {
                             data-param={row.value}
                             onClick={() => this.handleEdit(row.original)}
                         >
-                            Editar
+                            <FontAwesomeIcon icon={['fa', 'edit']} size={"1x"}/>
                 </Button>
 
                         <Button variant="danger"
                             data-param={row.value}
                             onClick={() => this.handleDelete(row.original)}
                         >
-                            -
+                            <FontAwesomeIcon icon={['fa', 'trash']} size={"1x"}/>
                 </Button>
                     </div>
 
@@ -346,7 +356,7 @@ export class ConceptsPage extends Component {
             {
                 Header: "Precio",
                 accessor: "totalPrice",
-                Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+                Cell: row => <div style={{ textAlign: "center" }}>${row.value.toFixed(2)}</div>,
             },
 
             {
@@ -358,7 +368,7 @@ export class ConceptsPage extends Component {
                             data-param={row.value}
                             onClick={() => this.handleAdd(row.original)}
                         >
-                            Agregar
+                            <FontAwesomeIcon icon={['fa', 'plus']} size={"1x"}/>
                         </Button>
                     </div>
 

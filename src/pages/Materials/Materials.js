@@ -5,9 +5,12 @@ import "./Materials.css";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 import { Query, Mutation } from "react-apollo";
-import { GET_MATERIALS, EDIT_MATERIAL, ADD_MATERIAL } from "./constants";
+import { GET_MATERIALS, EDIT_MATERIAL, ADD_MATERIAL,DELETE_MATERIAL } from "./constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MaterialModal from "../../components/Material/Modal/Modal";
+import swal from 'sweetalert';
+import { withApollo } from "react-apollo";
+
 
 export class MaterialsPage extends Component {
   state = {
@@ -98,16 +101,51 @@ export class MaterialsPage extends Component {
     });
   };
 
-  handleDelete = () => {
-    console.log("delete");
+  handleDelete = selectedMaterial => {
+    console.log("eliminando");
+    console.log(selectedMaterial);
+    swal({
+      title: "¿Estás seguro de que deseas eliminar?",
+      buttons: true,
+      dangerMode: true,
+    }).then( async (value) => {
+        if(value===null){
+        }
+        else {
+          this.props.client
+          .mutate({
+            mutation: DELETE_MATERIAL,
+            variables: { id: selectedMaterial._id },
+            refetchQueries:[{ query: GET_MATERIALS }]
+          })
+          .then(data => {
+            console.log(data)
+            // console.log(data.data.deleteMaterialGroup._id);
+            swal(
+              "Proceso de eliminado exitoso!",
+              "Su informacion se ha removido!",
+              "success"
+            );
+          })
+          .catch(err => {
+            console.log(err);
+            swal(
+              "Proceso de eliminado no exitoso!",
+              "Notificar al programador!",
+              "error"
+            );
+          });    
+        }
+    })
   };
+
 
   handleModalClose = () => this.setState({ modalShow: false });
 
   render() {
     const columns = [
       {
-        Header: "Origen",
+        Header: "Agregado por:",
         accessor: "fromExcel",
         filterable: true,
         filterMethod: (filter, row) =>
@@ -188,13 +226,13 @@ export class MaterialsPage extends Component {
               onClick={() => this.handleEdit(row.original, this)}
               className="edit-btn"
             >
-              Edit
+              <FontAwesomeIcon icon={['fa', 'edit']} size={"1x"}/>
             </button>
             <button
-              onClick={() => this.handleDelete.bind(this, row.original)}
+              onClick={() => this.handleDelete(row.original)}
               className="danger-btn"
             >
-              Delete
+              <FontAwesomeIcon icon={['fa', 'trash']} size={"1x"}/>
             </button>
           </div>
         )
@@ -334,4 +372,4 @@ export class MaterialsPage extends Component {
   }
 }
 
-export default MaterialsPage;
+export default withApollo(MaterialsPage);

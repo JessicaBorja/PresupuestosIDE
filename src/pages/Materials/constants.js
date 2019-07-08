@@ -50,6 +50,14 @@ export const ADD_MATERIAL = gql`
   }
 `;
 
+export const DELETE_MATERIAL = gql`
+mutation DeleteMaterial($id:ID!){
+  deleteMaterial(id:$id){
+        _id
+    }
+}
+`;
+
 
 // mutation UpdateAccessory($id: ID!, $name: String!, $code:String!, $totalQuantity: Int, $currentQuantity: Int, $deleted: Boolean) {
 //   updateAccessory(

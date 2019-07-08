@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Layout from "../../../components/Layout/Layout";
 import "./Concepts.css"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Query } from "react-apollo";
 import { GET_CONCEPTS, ADD_CONCEPT, DELETE_CONCEPT,DUPLICATE_CONCEPT} from "./constants";
@@ -111,7 +112,7 @@ export class ConceptsPage extends Component {
     }
     handleDelete = (selectedMaterialGroup) => {
         console.log("borrar")
-        console.log(selectedMaterialGroup)
+        console.log(selectedMaterialGroup)   
         let materialGroups = this.state.materialGroupsInConcept
         const materialGroupIndex = materialGroups.findIndex(
             materialGroup => materialGroup._id === selectedMaterialGroup._id
@@ -251,32 +252,40 @@ export class ConceptsPage extends Component {
     handleDelete = (selectedConcept) => {
         console.log("borrar")
         console.log(selectedConcept)
-
-        this.props.client
-            .mutate({
-                mutation: DELETE_CONCEPT,
-                variables: { id: selectedConcept._id },
-                refetchQueries:[{ query: GET_CONCEPTS }]
-            })
-            .then(data => {
-                // console.log(data.data.deleteMaterialGroup._id)
-                //   console.log(data.data.deleteAuxMaterial);
-                console.log(data)
-                swal(
-                    "Proceso de eliminado exitoso!",
-                    "Su informacion se ha removido!",
-                    "success"
-                );
-            })
-            .catch(err => {
-                console.log(err);
-                swal(
-                    "Proceso de eliminado no exitoso!",
-                    "Notificar al programador!",
-                    "error"
-                );
-            });
-
+        swal({
+            title: "¿Estás seguro de que deseas eliminar?",
+            buttons: true,
+            dangerMode: true,
+          }).then( async (value) => {
+              if(value===null){
+              }
+              else {
+                this.props.client
+                .mutate({
+                    mutation: DELETE_CONCEPT,
+                    variables: { id: selectedConcept._id },
+                    refetchQueries:[{ query: GET_CONCEPTS }]
+                })
+                .then(data => {
+                    // console.log(data.data.deleteMaterialGroup._id)
+                    //   console.log(data.data.deleteAuxMaterial);
+                    console.log(data)
+                    swal(
+                        "Proceso de eliminado exitoso!",
+                        "Su informacion se ha removido!",
+                        "success"
+                    );
+                })
+                .catch(err => {
+                    console.log(err);
+                    swal(
+                        "Proceso de eliminado no exitoso!",
+                        "Notificar al programador!",
+                        "error"
+                    );
+                });    
+              }   
+        })
     }
 
     handleUpdate = (concept) => {
@@ -313,7 +322,7 @@ export class ConceptsPage extends Component {
                 Header: "Precio",
                 accessor: "price",
                 // headerStyle: {textAlign: 'right'},
-                Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+                Cell: row => <div style={{ textAlign: "center" }}>${row.value.toFixed(2)}</div>,
                 filterMethod: (filter, row) =>
                     row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
             },
@@ -326,28 +335,29 @@ export class ConceptsPage extends Component {
                             data-param={row.value}
                             onClick={() => this.handleEdit(row.original)}
                         >
-                            Editar
+                            <FontAwesomeIcon icon={['fa', 'edit']} size={"1x"}/>
                 </Button>
 
                         <Button variant="danger"
                             data-param={row.value}
                             onClick={() => this.handleDelete(row.original)}
                         >
-                            -
+                            <FontAwesomeIcon icon={['fa', 'trash']} size={"1x"}/>
                 </Button>
 
                         <Button variant="primary"
                             data-param={row.value}
                             onClick={() => this.handleDuplicate(row.original)}
+                            style={{fontWeight:"bolder"}}
                         >
-                            Duplicar
+                            x2
                 </Button>
 
                         <Button variant="success"
                             data-param={row.value}
                             onClick={() => this.handleUpdate(row.original)}
                         >
-                            Actualizar
+                            <FontAwesomeIcon icon={['fa', 'sync']} size={"1x"}/>
                 </Button>
                     </div>
 

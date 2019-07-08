@@ -14,6 +14,8 @@ import UnitDetail from "./pages/Unit/UnitDetail/Unit";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faPlus,
+  faTrash,
+  faEdit,faSync,
   faHome,
   faChevronLeft,
   faMapMarkerAlt,
@@ -42,7 +44,7 @@ class App extends Component {
       faFacebook, faLinkedin, faSearch, faHome,
       faWindowClose, faChevronLeft, faMapMarkerAlt,
       faChevronCircleLeft, faChevronCircleRight, faWhatsapp,
-      faPlus
+      faPlus,faTrash,faEdit,faSync
     ]);
 
     return (

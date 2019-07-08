@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Layout from "../../../components/Layout/Layout";
 import "./Concepts.css"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Query } from "react-apollo";
 import { GET_UNITS, ADD_CONCEPT, CREATE_AUXMATGROUP,GET_CONCEPTS } from "./constants";
@@ -25,13 +26,31 @@ export class ConceptsPage extends Component {
             unit: null,
             show: false,
             id: "",
-            materialGroupsInConcept: []
+            materialGroupsInConcept: [],
+            concepts:[]
         }
+    }
+    searchUnits=()=>{
+        this.props.client
+            .query({
+            query: GET_CONCEPTS,
+            })
+            .then(data => {
+                console.log(data.data.concepts)
+                this.setState({
+                    concepts:data.data.concepts
+                })
+            })
+            .catch(error => {
+            console.log("error", error)
+        });
     }
 
     componentDidMount=()=>{
-        console.log("================pagina Agregar conceptos")
+        console.log("\n====Pagina de Conceptos\n")
+        this.searchUnits();
     }
+
     updateTotalPrice=(materialGroup,materials)=>{
         console.log("updating")
         console.log(materialGroup)
@@ -69,9 +88,6 @@ export class ConceptsPage extends Component {
             console.log(data)
             console.log(data.data.createAuxMaterialGroup)
             newMaterialGroups.push(data.data.createAuxMaterialGroup)
-            // this.state.materialGroupsInConcept.map((materialGroup) => {
-            //     return materialGroup._id
-            // })
             uploaded++;
             if(this.state.materialGroupsInConcept.length===uploaded){
                 console.log("se cargaron todos")
@@ -100,7 +116,9 @@ export class ConceptsPage extends Component {
                         "Proceso de generacion exitoso!",
                         "Su concepto se ha añadido!",
                         "success"
-                      );
+                      ).then(()=>{
+                          this.props.history.push("/consultaConcepto")
+                      })
                 }).catch((err) => { console.log(err) })
             }
         }).catch((err) => { console.log(err) })    
@@ -110,10 +128,38 @@ export class ConceptsPage extends Component {
         console.log("antes")
         console.log(this.state.materialGroupsInConcept)
 
-        console.log("grabando")
-        this.state.materialGroupsInConcept.forEach(async (materialGroup)=>{
-            await this.addMaterialToDb(materialGroup)
-        })
+        let condition=this.state.description===null||this.state.description.length===0
+        condition|=this.state.conceptKey==null||this.state.conceptKey.length===0
+        condition|=this.state.unit==null||this.state.unit.length===0
+        if(condition){
+             swal(`Favor de llenar los campos de cantidad, precio unitario y unidad`,"Valores no nulos","error");
+        }
+        else if(this.state.materialGroupsInConcept.length===null||this.state.materialGroupsInConcept.length===0){
+             swal(`Favor de agregar por lo menos un material`,"Materiales en tabla inferior","error");
+        }
+        else{
+            console.log("grabando")
+            console.log(this.state.conceptKey)
+            console.log(this.state.concepts)
+            let concepts=JSON.parse(JSON.stringify(this.state.concepts))
+            const conceptIndex = concepts.findIndex(
+                concept => concept.conceptKey === this.state.conceptKey
+            );
+            console.log(conceptIndex)
+            if(conceptIndex===-1){
+                console.log("clave de concepto nueva")
+                this.state.materialGroupsInConcept.forEach(async (materialGroup)=>{
+                    await this.addMaterialToDb(materialGroup)
+                })
+            }
+            else{
+                swal(
+                    "Ya existe un concepto con esa Clave!",
+                    "Modificar La Clave",
+                    "error"
+                  );
+            }
+        }
     }
 
     handleEdit = (selectedMaterialGroup) => {
@@ -239,7 +285,7 @@ export class ConceptsPage extends Component {
                 Header: "Precio",
                 accessor: "totalPrice",
                 // headerStyle: {textAlign: 'right'},
-                Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+                Cell: row => <div style={{ textAlign: "center" }}>${row.value.toFixed(2)}</div>,
                 filterMethod: (filter, row) =>
                     row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
             },
@@ -252,7 +298,8 @@ export class ConceptsPage extends Component {
                             data-param={row.value}
                             onClick={() => this.handleAdd(row.original)}
                         >
-                            Agregar
+                            <FontAwesomeIcon icon={['fa', 'plus']} size={"1x"}/>
+
                     </Button>
                     </div>
 
@@ -298,7 +345,7 @@ export class ConceptsPage extends Component {
                 Header: "Subtotal",
                 accessor: "totalPrice",
                 // headerStyle: {textAlign: 'right'},
-                Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+                Cell: row => <div style={{ textAlign: "center" }}>${row.value.toFixed(2)}</div>,
                 filterMethod: (filter, row) =>
                     row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
             },

@@ -1,6 +1,30 @@
 import gql from "graphql-tag";
 
+
 export const GET_UNITS = gql`
+  {
+    materialGroups {
+      _id
+      materialGroupKey
+      measurementUnit
+      name
+      totalPrice
+      auxMaterials{
+          _id
+          name
+          materialKey
+          materialQuantity
+          totalQuantity
+          measurementUnit
+          unitPrice
+          totalPrice
+          fromExcel
+      }
+    }
+  }
+`;
+
+export const GET_MATERIALS = gql`
 {
     materials {
       _id

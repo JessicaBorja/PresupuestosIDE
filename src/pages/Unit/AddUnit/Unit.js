@@ -2,16 +2,17 @@ import React, { Component } from 'react'
 import Layout from "../../../components/Layout/Layout";
 import "./Unit.css"
 import { Query } from "react-apollo";
-import { GET_MATERIALS } from "../../Materials/constants";
 import ReactTable from "react-table";
 import Spinner from "../../../components/Spinner/Spinner";
 import { Col, Row } from "react-bootstrap"
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import swal from 'sweetalert';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-import { GET_UNITS,ADD_MATERIAL,ADD_UNIT } from "./constants";
+import { GET_MATERIALS, ADD_MATERIAL,ADD_UNIT ,GET_UNITS} from "./constants";
 import { withApollo } from "react-apollo";
+import { join } from 'path';
 let subidos=0;
 
  
@@ -26,8 +27,14 @@ export class UnitPage extends Component {
                 unit:null,
                 show:false,
                 id:"",
-                materialsInConcept:[]
+                materialsInConcept:[],
+                units:[]
         }
+    }
+
+    componentDidMount=()=>{
+        console.log("\n====pagina de precios unitarios\n")
+        this.searchUnits();
     }
 
     updateTotalPrice=(materialGroup,materials)=>{
@@ -44,6 +51,7 @@ export class UnitPage extends Component {
 
     saveUnit=(materialGroup)=>{
         console.log("saving")
+        // this.searchUnits();
         console.log(materialGroup)
         materialGroup=this.updateTotalPrice(materialGroup,this.state.materialsInConcept)
         materialGroup.auxMaterials=materialGroup.auxMaterials.map((material)=>{ return material._id})
@@ -57,15 +65,9 @@ export class UnitPage extends Component {
                 "Proceso de generacion exitoso!",
                 "Su precio unitario se ha añadido!",
                 "success"
-              );
-    
-            // materialesAux.push(data.data.createAuxMaterial._id)
-            // subidos++;
-            // if(this.state.materialsInConcept.length===subidos){
-            //     console.log("termine2")
-            //     console.log(materialesAux)
-            //     this.saveUnit(concepto)
-            // }
+              ).then((value)=>{
+                this.props.history.push("/consultaUnitario")
+            });
         }).catch((err) => { console.log(err) })
     }
 
@@ -97,20 +99,13 @@ export class UnitPage extends Component {
             query: GET_UNITS,
             })
             .then(data => {
-                console.log(data)
-            // const foundCustomers = data.data.clients.filter(client =>
-            //     client.name.toUpperCase().includes(this.state.customer.toUpperCase()) ||
-            //     client.email.toUpperCase().includes(this.state.customer.toUpperCase()) ||
-            //     client.company.toUpperCase().includes(this.state.customer.toUpperCase()))
-            // this.setState({ foundCustomers })
+                console.log(data.data.materialGroups)
+                this.setState({
+                    units:data.data.materialGroups
+                })
             })
             .catch(error => {
             console.log("error", error)
-            // if (error.graphQLErrors && error.graphQLErrors.length > 0)
-            //     console.log(`error: ${error.graphQLErrors[0].message}`)
-            // this.setState({
-            //     error: true
-            // })
         });
     }
 
@@ -210,17 +205,34 @@ export class UnitPage extends Component {
             swal(`Favor de agregar por lo menos un material`);
        }
        else{
-            console.log(this.state.materialsInConcept)
-            let concepto={
-                name:this.state.description,
-                materialGroupKey:this.state.conceptKey,
-                measurementUnit:this.state.unit,
-                auxMaterials:this.state.materialsInConcept
+            console.log(this.state.conceptKey)
+            console.log(this.state.units)
+            let units=JSON.parse(JSON.stringify(this.state.units))
+            const materialGroupIndex = units.findIndex(
+                materialGroup => materialGroup.materialGroupKey === this.state.conceptKey
+            );
+            console.log(materialGroupIndex)
+            if(materialGroupIndex===-1){
+                console.log("clave nueva")
+                console.log(this.state.materialsInConcept)
+                let concepto={
+                    name:this.state.description,
+                    materialGroupKey:this.state.conceptKey,
+                    measurementUnit:this.state.unit,
+                    auxMaterials:this.state.materialsInConcept
+                }
+                console.log(concepto)
+                concepto.auxMaterials.forEach(async (materialInput)=>{
+                    this.addMaterial(materialInput,concepto)
+                })    
             }
-            console.log(concepto)
-            concepto.auxMaterials.forEach(async (materialInput)=>{
-                this.addMaterial(materialInput,concepto)
-            })
+            else{
+                swal(
+                    "Ya existe un Precio Unitario con esa Clave!",
+                    "Modificar La Clave",
+                    "error"
+                  );
+            }
         }
     }
 
@@ -298,7 +310,8 @@ export class UnitPage extends Component {
                     data-param={row.value}
                     onClick={() => this.handleAdd(row.original)}
                 >
-                    Agregar
+                  <FontAwesomeIcon icon={['fa', 'plus']} size={"1x"}/>
+
                 </Button>
                 </div>
                 
@@ -333,7 +346,7 @@ export class UnitPage extends Component {
             Header: "Subtotal",
             accessor: "totalPrice",
             // headerStyle: {textAlign: 'right'},
-            Cell: row => <div style={{ textAlign: "center" }}>${row.value}</div>,
+            Cell: row => <div style={{ textAlign: "center" }}>${row.value.toFixed(2)}</div>,
             filterMethod: (filter, row) =>
                 row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
             },
@@ -360,7 +373,7 @@ export class UnitPage extends Component {
             }
         ];
 
-        console.log(this.state.materialsInConcept.length)
+        // console.log(this.state.materialsInConcept.length)
         return (
             <Layout>
                 <div className="unit">
@@ -368,17 +381,17 @@ export class UnitPage extends Component {
                     <Row style={{marginBottom:"2rem",width:"90%"}}> 
                         <Col xs={12} lg={3}>
                             <Form.Label>Clave</Form.Label>
-                            <Form.Control type="email" placeholder="Clave de Concepto"
+                            <Form.Control type="email" placeholder="Clave de Precio Unitario"
                             onChange={this.handleChange('conceptKey')}/>    
                         </Col>
                         <Col xs={12} lg={3}>
                             <Form.Label>Nombre/descripción </Form.Label>
-                            <Form.Control type="email" placeholder="Descripcion"
+                            <Form.Control type="email" placeholder="Descripcion de Precio Unitario"
                             onChange={this.handleChange('description')}/>    
                         </Col>
                         <Col xs={12} lg={2}>
                             <Form.Label>Unidad</Form.Label>
-                            <Form.Control type="email" placeholder="unidad"
+                            <Form.Control type="email" placeholder="Unidad de Precio Unitario"
                             onChange={this.handleChange('unit')}/>    
                         </Col>
                         <Col xs={12} lg={2}>
