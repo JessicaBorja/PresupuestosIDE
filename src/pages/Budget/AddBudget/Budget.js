@@ -1,21 +1,16 @@
 import React, { Component } from "react";
 
 // Import React Table
-import ReactTable from "react-table";
 import "react-table/react-table.css";
 
 import Layout from "../../../components/Layout/Layout";
 import "./Budget.css";
 
-import BudgetModal from "../../../components/Budget/Modal/Modal";
 import Tabla from "../../../components/Budget/Tabla/Tabla"
-import { Col, Row, Container } from "react-bootstrap"
+import { Col, Row } from "react-bootstrap"
 import Form from 'react-bootstrap/Form'
 import Badge from 'react-bootstrap/Badge'
 
-import { Query } from "react-apollo";
-import { GET_CONCEPTS } from "./constants";
-import Spinner from "../../../components/Spinner/Spinner";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 const range = len => {
@@ -163,52 +158,6 @@ export class BudgetPage extends Component {
   handleModalClose = () => this.setState({ modalShow: false });
 
   render() {
-    const { data } = this.state;
-    const columns = [
-      {
-        Header: "Clave",
-        accessor: "budgetkey",
-        width: 100
-      },
-      {
-        Header: "Cliente",
-        id: "client",
-        accessor: d => d.lastName,
-        width: 300
-      },
-      {
-        Header: "fecha",
-        accessor: "date",
-        minWidth: 100
-      },
-      {
-        Header: "Importe total",
-        accessor: "totalCost",
-        minWidth: 200
-      },
-      {
-        Header: "Operacion",
-        accesor: "_id",
-        Cell: row => (
-          <div className="mutationbtn-container">
-            <button
-              data-param={row.value}
-              onClick={() => this.handleEdit(row.original, this)}
-              className="edit-btn"
-            >
-              Edit
-            </button>
-            <button
-              onClick={() => this.handleDelete.bind(this, row.original)}
-              className="danger-btn"
-            >
-              Delete
-            </button>
-          </div>
-        ),
-        minWidth: 200
-      }
-    ];
 
     return (
       <Layout>

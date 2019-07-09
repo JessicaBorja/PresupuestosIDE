@@ -1,8 +1,6 @@
 import React from 'react';
 import "./Tabla.css"
 // import ProductCarousel from "../../Carousel/Carousel"
-import { Col, Row, Container } from "react-bootstrap"
-import Form from 'react-bootstrap/Form'
 import  { Component } from "react";
 import { Query } from "react-apollo";
 import { GET_CONCEPTS } from "./constants";
