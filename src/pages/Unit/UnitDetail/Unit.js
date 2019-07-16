@@ -224,7 +224,7 @@ export class UnitPage extends Component {
         Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
       },
       {
-        Header: "cantidad",
+        Header: "Cantidad",
         accessor: "materialQuantity",
         Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>
       },
@@ -352,7 +352,9 @@ export class UnitPage extends Component {
             <Query
               query={GET_UNIT}
               variables={{ id: this.props.match.params.id }}
-              onCompleted={data => this.setState({ materialGroup: data.materialGroup })}
+              onCompleted={data => {
+                console.log(data.materialGroup)
+                this.setState({ materialGroup: data.materialGroup })}}
             >
               {({ loading, error, data }) => {
                 if (loading) return <Spinner />;
@@ -396,38 +398,9 @@ export class UnitPage extends Component {
 
           {/* EDIT */}
           <Mutation mutation={EDIT_MATERIAL}
-          // update={(cache, { data: { updateAuxMaterial } }) => {
-          //   const { materialGroup } = cache.readQuery({
-          //     query: GET_UNIT,
-          //     variables: { id: this.props.match.params.id }
-          //   });
-          //   let auxMaterials = materialGroup.auxMaterials
-          //   let editedMaterialIndex = auxMaterials.findIndex(
-          //     material => material._id === updateAuxMaterial._id
-          //   );
-          //   auxMaterials[editedMaterialIndex] = updateAuxMaterial;
-
-          //   this.props.client.writeQuery({
-          //     query: GET_UNIT,
-          //     variables: { id: this.props.match.params.id },
-          //     data: {
-          //       materialGroup: {
-          //         ...materialGroup,
-          //         auxMaterials
-          //       }
-          //     },
-          //   })
-          // }}
-          //     refetchQueries={() => {
-          //         // console.log("refetchQueries", product.id)
-          //         console.log("refetch")
-          //         return [{
-          //            query: GET_UNITS,
-          //        }];
-          //    }}
           >
-            {updateAccessory => (
-              <MaterialModal
+            {updateAuxMaterial => (
+              this.state.modalShow && <MaterialModal
                 show={this.state.modalShow}
                 onHide={this.handleModalClose}
                 product={this.state.selectedMaterial}
@@ -435,18 +408,40 @@ export class UnitPage extends Component {
                 onConfirm={editedMaterial => {
                   editedMaterial.totalPrice = Number(editedMaterial.materialQuantity) * Number(editedMaterial.unitPrice);
 
-                  // console.log(editedMaterial)
-                  updateAccessory({
-                    variables: {
-                      id: editedMaterial._id,
-                      ...editedMaterial,
-                      materialQuantity: +editedMaterial.materialQuantity,
-                      unitPrice: +editedMaterial.unitPrice
-                    }
-                  });
-                  this.setState({
-                    modalShow: false
-                  })
+                  console.log(editedMaterial)
+
+                  let condition=editedMaterial.materialQuantity===null||editedMaterial.materialQuantity.length===0
+                  condition|=editedMaterial.unitPrice==null||editedMaterial.unitPrice.length===0
+                  if(condition){
+                    swal(
+                      "Favor de modificar los valores de cantidad y precio unitario",
+                      "Valores no modificados o nulos",
+                      "error"
+                    );
+                  }else{
+                    updateAuxMaterial({
+                      variables: {
+                        id: editedMaterial._id,
+                        ...editedMaterial,
+                        materialQuantity: +editedMaterial.materialQuantity,
+                        unitPrice: +editedMaterial.unitPrice
+                      }
+                    }).then(data => {
+                      console.log("editado")
+                      console.log(data.data.updateAuxMaterial)
+                      swal(
+                        "Proceso de edicion exitoso!",
+                        "Su informacion se ha editado!",
+                        "success"
+                      );
+                      this.setState({
+                        modalShow: false
+                      })
+                    }).catch(err=>{
+                      console.log(err)
+                    })
+                 
+                  }        
                 }
                 }
               >
@@ -454,38 +449,6 @@ export class UnitPage extends Component {
               </MaterialModal>
             )}
           </Mutation>
-
-          {/* <Mutation mutation={EDIT_MATERIAL}>
-            {(addTodo, { data }) => (
-              <div>
-                <form
-                  onSubmit={e => {
-                    e.preventDefault();
-                    addTodo({ variables: { type: input.value } });
-                    input.value = "";
-                  }}
-                >
-                  <input
-                    ref={node => {
-                      input = node;
-                    }}
-                  />
-                  <button type="submit">Add Todo</button>
-                </form>
-              </div>
-            )}
-          </Mutation> */}
-          {/* <MaterialModal
-            show={this.state.modalShow}
-            onHide={this.handleModalClose}
-            product={this.state.selectedMaterial}
-            handleQuotation={this.handleQuotation}
-            onConfirm={editedMaterial => {
-            //   console.log("confirmado el material");
-            //   console.log(editedMaterial);
-              this.setState({ modalShow: false });
-            }}
-          /> */}
         </div>
       </Layout >
     );

@@ -46,7 +46,23 @@
     flex-wrap: wrap;
     margin-bottom: 2rem;
   }
-  
+
+  .concept{
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+
+  .concept-child{
+    width: 10%;
+    box-sizing: border-box;
+    padding: 0.5rem 1rem;
+    margin-left: 1rem;
+    background:#b3bbbb;
+    color:black;
+    margin-bottom: 0.5rem;
+  }
+
   .child{
     width: 10%;
     box-sizing: border-box;

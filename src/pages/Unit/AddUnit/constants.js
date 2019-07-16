@@ -56,8 +56,8 @@ mutation CreateAuxMaterial($name: String, $materialKey:String, $measurementUnit:
 }
 `;
 export const ADD_UNIT = gql`
-mutation createMaterialGroup($materialGroupKey: String!,$totalPrice:Float, $measurementUnit:String, $name: String,$auxMaterials:[ID]){
-    createMaterialGroup(materialGroupInput: { materialGroupKey: $materialGroupKey,totalPrice:$totalPrice, measurementUnit:$measurementUnit, name: $name,auxMaterials:$auxMaterials}){
+mutation createMaterialGroup($materialGroupKey: String!,$totalPrice:Float,$Mo:Float,$noMo:Float, $measurementUnit:String, $name: String,$auxMaterials:[ID]){
+    createMaterialGroup(materialGroupInput: { materialGroupKey: $materialGroupKey,totalPrice:$totalPrice, Mo:$Mo, noMo:$noMo, measurementUnit:$measurementUnit, name: $name,auxMaterials:$auxMaterials}){
         _id
     }
 }

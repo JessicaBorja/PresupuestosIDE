@@ -8,6 +8,8 @@ export const GET_UNITS = gql`
       measurementUnit
       name
       totalPrice
+      Mo
+      noMo
       auxMaterials{
           _id
           name

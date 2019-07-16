@@ -4,8 +4,12 @@ import "./Modal.css"
 import { Col, Row, Container } from "react-bootstrap"
 import Form from 'react-bootstrap/Form'
 import { Component } from "react";
+import Dropdown from 'react-bootstrap/Dropdown'
+import DropdownButton from 'react-bootstrap/DropdownButton'
 
 class MaterialModal extends Component {
+    edit=false;
+
     constructor(props) {
         super(props);
         let materialKey = "";
@@ -15,6 +19,7 @@ class MaterialModal extends Component {
         let totalPrice = 0;
         let measurementUnit = "";
         let id = "";
+        let materialKeySubIndex="";
 
         if (props.material) {
             if (props.material.materialKey) materialKey = props.material.materialKey;
@@ -24,9 +29,10 @@ class MaterialModal extends Component {
             if (props.material.totalPrice) totalPrice = props.material.totalPrice;
             if (props.material.measurementUnit) measurementUnit = props.material.measurementUnit;
             if (props.material._id) id = props.material._id;
+            this.edit=true;
         }
         this.state = {
-            materialKey, name, quantity, unitPrice, totalPrice, measurementUnit, id
+            materialKey, name, quantity, unitPrice, totalPrice, measurementUnit, id,materialKeySubIndex
         }
     }
 
@@ -34,6 +40,12 @@ class MaterialModal extends Component {
         this.setState({
             [name]: event.target.value,
         });
+    }
+    handleSelect=(selectedValue)=>{
+        console.log(selectedValue)
+        this.setState({
+            materialKeySubIndex:selectedValue
+        })
     }
 
     render() {
@@ -54,7 +66,15 @@ class MaterialModal extends Component {
                 <Modal.Body>
                     <Container fluid>
                         <Row>
-                            <Col xs={12} lg={6}>
+                            <Col xs={12} lg={2}>
+                                <DropdownButton variant="secondary" title='Código' onSelect={this.handleSelect.bind(this)}>
+                                    <Dropdown.Item as="button" eventKey='MO-' >Personal</Dropdown.Item>
+                                    <Dropdown.Item as="button" eventKey='EQ-'>Equipo</Dropdown.Item>
+                                    <Dropdown.Item as="button" eventKey='HE-'>Herramienta</Dropdown.Item>
+                                    <Dropdown.Item as="button" eventKey='MAT-'>Material</Dropdown.Item>
+                                </DropdownButton>
+                            </Col>
+                            <Col xs={12} lg={4}>
                                 <Form.Label>Clave</Form.Label>
                                 <Form.Control type="text" value={this.state.materialKey}
                                     onChange={this.handleChange('materialKey')} />
@@ -64,21 +84,21 @@ class MaterialModal extends Component {
                                 <Form.Control type="text" value={this.state.name}
                                     onChange={this.handleChange('name')} />
                             </Col>
-                            <Col xs={12} lg={6}>
+                            {this.edit && <Col xs={12} lg={6}>
                                 <Form.Label>Cantidad</Form.Label>
                                 <Form.Control type="text" value={this.state.quantity}
                                     onChange={this.handleChange('quantity')} />
-                            </Col>
+                            </Col>}
                             <Col xs={12} lg={6}>
                                 <Form.Label>Precio unitario</Form.Label>
                                 <Form.Control type="text" value={this.state.unitPrice}
                                     onChange={this.handleChange('unitPrice')} />
                             </Col>
-                            <Col xs={12} lg={6}>
+                            {this.edit && <Col xs={12} lg={6}>
                                 <Form.Label>Precio total</Form.Label>
                                 <Form.Control type="text" value={this.state.totalPrice}
                                     onChange={this.handleChange('totalPrice')} />
-                            </Col>
+                            </Col>}
                             <Col xs={12} lg={6}>
                                 <Form.Label>Unidad</Form.Label>
                                 <Form.Control type="text" value={this.state.measurementUnit}

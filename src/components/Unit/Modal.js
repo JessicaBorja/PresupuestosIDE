@@ -11,15 +11,24 @@ import  { Component } from "react";
 class ProductModal extends Component {  
     constructor(props) {
         super(props);
-        this.state = { 
-        materialQuantity:null,
-        unitPrice:null,
-        totalPrice:null,
-        measurementUnit:"",
-        id:""
-    }
-        // console.log(props)
+        let materialQuantity = null;
+        let unitPrice = null;
+        let totalPrice = null;
+        let measurementUnit = "";
+        let id = "";
 
+
+        if (props.product) {
+            console.log("tengo propiedades")
+            console.log(props.product)
+            if (props.product.materialQuantity) materialQuantity = props.product.materialQuantity;
+            if (props.product.unitPrice) unitPrice = props.product.unitPrice;
+            if (props.product._id) id = props.product._id;
+        }
+
+        this.state = {
+            materialQuantity, unitPrice, totalPrice, measurementUnit, id
+        }
     }
 // const ProductModal = (props) => {
     handleSave=(material,stuff)=>{
@@ -57,12 +66,12 @@ class ProductModal extends Component {
                         <Row>
                             <Col xs={12} lg={6}>
                                 <Form.Label>Cantidad</Form.Label>
-                                <Form.Control type="email" placeholder={this.props.product.materialQuantity} 
+                                <Form.Control type="number" placeholder="Ingresa la cantidad" defaultValue={this.props.product.materialQuantity}
                                 onChange={this.handleChange('materialQuantity')}/>    
                             </Col>
                             <Col xs={12} lg={6}>
                                 <Form.Label>Precio unitario</Form.Label>
-                                <Form.Control type="email" placeholder={this.props.product.unitPrice} 
+                                <Form.Control type="email" placeholder="Ingresa el Precio Unitario" defaultValue={this.props.product.unitPrice}
                                 onChange={this.handleChange('unitPrice')}/>    
                             </Col>
                         </Row>

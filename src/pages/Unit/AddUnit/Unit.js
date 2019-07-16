@@ -14,6 +14,7 @@ import { GET_MATERIALS, ADD_MATERIAL,ADD_UNIT ,GET_UNITS} from "./constants";
 import { withApollo } from "react-apollo";
 // import { join } from 'path';
 let subidos=0;
+let materials=[]
 
  
 
@@ -40,11 +41,19 @@ export class UnitPage extends Component {
     updateTotalPrice=(materialGroup,materials)=>{
         console.log("updating")
         console.log(materialGroup)
+        let Mo=0;
+        let noMo=0;
         let totalPrice=0;
         materials.forEach(auxMaterial => {
             totalPrice += auxMaterial.totalPrice;
+            if(auxMaterial.materialKey.slice(0,2)==="MO")
+                Mo+=auxMaterial.totalPrice
+            else
+                noMo+=auxMaterial.totalPrice
         });
         materialGroup.totalPrice=totalPrice;
+        materialGroup.Mo=Mo;
+        materialGroup.noMo=noMo;
         console.log(totalPrice)
           return materialGroup;
     }
@@ -52,9 +61,10 @@ export class UnitPage extends Component {
     saveUnit=(materialGroup)=>{
         console.log("saving")
         // this.searchUnits();
-        console.log(materialGroup)
         materialGroup=this.updateTotalPrice(materialGroup,this.state.materialsInConcept)
         materialGroup.auxMaterials=materialGroup.auxMaterials.map((material)=>{ return material._id})
+        console.log(materialGroup)
+
         this.props.client.mutate({
             mutation: ADD_UNIT,
             variables: { ...materialGroup },
@@ -80,13 +90,13 @@ export class UnitPage extends Component {
                     _id:null
                  }
             }).then(data => {
-                // console.log(data.data.createAuxMaterial._id)
-                let materials=[]
+                console.log(`created aux material :${data.data.createAuxMaterial._id}`)
                 materials.push(data.data.createAuxMaterial)
                 subidos++;
+                // si se terminaron de generar los auxmaterials
                 if(this.state.materialsInConcept.length===subidos){
                     console.log("termine2")
-                    // console.log(materialesAux)
+                    console.log(this.state.materialsInConcept)
                     concepto.auxMaterials=materials
                     this.saveUnit(concepto)
                 }

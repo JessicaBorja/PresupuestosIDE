@@ -12,6 +12,7 @@ import Form from 'react-bootstrap/Form'
 import Badge from 'react-bootstrap/Badge'
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import swal from 'sweetalert';
 
 const range = len => {
   const arr = [];
@@ -104,41 +105,73 @@ export class BudgetPage extends Component {
   }
 
   addConcept=(Id,valor)=>{
-    console.log("agregando elemento")
-      console.log("magia")
-      console.log(valor)
-      console.log(Id)
-      let secciones=JSON.parse(JSON.stringify(this.state.partidas))
-      const seccionIndex = secciones.findIndex(
-        seccion => seccion._id === Id
-    );
-    // console.log(seccionIndex)
-    // console.log( secciones)
-    secciones[seccionIndex].conceptos.push(valor)
-    this.setState({
-      partidas:secciones
+    swal({
+      title: "Ingresa cantidad",
+      content: 'input',
+      buttons: true,
+      dangerMode: true,
+    }).then( async (value) => {
+      if(value===null){
+      }
+      else if( isNaN(Number(value)) || Number(value) <= 0) {
+          swal(`Favor de ingresar un numero mayor a 0, usted ingreso: ${value}`);
+      }
+      else {
+        console.log(`agregando cantidad: ${value}`)
+        console.log("agregando elemento")
+        console.log("magia")
+        console.log(valor)
+        console.log(Id)
+        let secciones=JSON.parse(JSON.stringify(this.state.partidas))
+        const seccionIndex = secciones.findIndex(
+          seccion => seccion._id === Id
+        );
+        valor.quantity=+value;
+        valor.totalPrice=(+value)*(+valor.price);
+        valor.mo=0;
+        valor.noMo=0;
+        // console.log(seccionIndex)
+        // console.log( secciones)
+        secciones[seccionIndex].conceptos.push(valor)
+        this.setState({
+          partidas:secciones
+        })
+      }
     })
   }
 
 
   handleAddSection=()=>{
     console.log("Agregando Partida")
-    let secciones=JSON.parse(JSON.stringify(this.state.partidas))
-    console.log(secciones)
-    let newId=(secciones[secciones.length-1]._id)+1
-    secciones[secciones.length-1].ultima=false;
-    secciones[secciones.length-1].descripcion=this.state.nombrePartida;
-    secciones[secciones.length-1].unidad=this.state.unidadPartida;
-    secciones[secciones.length-1].cantidadPartida=this.state.cantidadPartida;
-    secciones[secciones.length-1].precioUnitario=0;
-    secciones[secciones.length-1].subtotal=0;
-    secciones[secciones.length-1].importeTotal=0;
-    secciones[secciones.length-1].conceptos=[];
-
-    secciones.push({_id:newId,ultima:true,hidden:true})
-    this.setState({
-      partidas:secciones, nombrePartida:"",unidadPartida:"",cantidadPartida:""
-    })
+    let condition=this.state.nombrePartida===null||this.state.nombrePartida.length===0
+    condition|=this.state.unidadPartida==null||this.state.unidadPartida.length===0
+    condition|=this.state.cantidadPartida==null||this.state.cantidadPartida.length===0
+    if(condition){
+      swal(`Favor de llenar los campos de cantidad, nombre partida y unidad partida`,"Valores no nulos","error");
+    }
+    else{
+      if (!this.state.cantidadPartida || isNaN(Number(this.state.cantidadPartida)) || Number(this.state.cantidadPartida) <= 0) {
+        swal(`Favor de ingresar un numero mayor a 0`,` usted ingreso: ${this.state.cantidadPartida}`,"error");
+      }
+      else{
+        let secciones=JSON.parse(JSON.stringify(this.state.partidas))
+        console.log(secciones)
+        let newId=(secciones[secciones.length-1]._id)+1
+        secciones[secciones.length-1].ultima=false;
+        secciones[secciones.length-1].descripcion=this.state.nombrePartida;
+        secciones[secciones.length-1].unidad=this.state.unidadPartida;
+        secciones[secciones.length-1].cantidadPartida=this.state.cantidadPartida;
+        secciones[secciones.length-1].precioUnitario=0;
+        secciones[secciones.length-1].subtotal=0;
+        secciones[secciones.length-1].importeTotal=0;
+        secciones[secciones.length-1].conceptos=[];
+    
+        secciones.push({_id:newId,ultima:true,hidden:true})
+        this.setState({
+          partidas:secciones, nombrePartida:"",unidadPartida:"",cantidadPartida:""
+        })  
+      }
+    }
   }
 
   acordeon=(Id,event)=>{
@@ -248,13 +281,30 @@ export class BudgetPage extends Component {
                     <div className='child'>${partida.precioUnitario}</div>
                     <div className='child'>${partida.subtotal}</div>
                     <div className='child'>${partida.importeTotal}</div>
+                    {
+                      partida.conceptos.map((concepto,i)=>{
+                        return (
+                          <Row noGutters className="concept" key={concepto._id}>
+                            <div className='concept-child' style={{width:"100%"}}>Descripcion de concepto 1.01</div>
+                            <div className='concept-child' style={{width:"100%"}}>Notas 1.01</div>
+                            <div className='concept-child' style={{width:"12%",backgroundColor:"#699c9c"}}>1.01</div>
+                            <div className='concept-child' style={{width:"12%",backgroundColor:"#699c9c"}}>{concepto.conceptKey}</div>
+                            <div className='concept-child' style={{width:"12%",backgroundColor:"#699c9c"}}>{concepto.name}</div>
+                            <div className='concept-child' style={{width:"12%",backgroundColor:"#699c9c"}}>{concepto.measurementUnit}</div>
+                            <div className='concept-child' style={{width:"12%"}}>{concepto.quantity}</div>
+                            <div className='concept-child' style={{width:"12%",backgroundColor:"#699c9c"}}>{concepto.price.toFixed(2)}</div>
+                            <p >hola</p>
+                          </Row>
+                        )
+                      })
+                    }
                     {!partida.hidden &&
-                        <div className="materials-table-cont" style={{marginTop:"2rem"}}>
-                          <Tabla
-                          handleAdd={this.addConcept.bind(this,partida._id)}
-                          ></Tabla>
-                       </div>
-                       }
+                      <div className="materials-table-cont" style={{marginTop:"2rem"}}>
+                        <Tabla
+                        handleAdd={this.addConcept.bind(this,partida._id)}
+                        ></Tabla>
+                      </div>
+                    }
                   </Row>
                 }
 

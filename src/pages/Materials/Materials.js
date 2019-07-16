@@ -5,12 +5,16 @@ import "./Materials.css";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 import { Query, Mutation } from "react-apollo";
-import { GET_MATERIALS, EDIT_MATERIAL, ADD_MATERIAL,DELETE_MATERIAL } from "./constants";
+import {
+  GET_MATERIALS,
+  EDIT_MATERIAL,
+  ADD_MATERIAL,
+  DELETE_MATERIAL
+} from "./constants";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MaterialModal from "../../components/Material/Modal/Modal";
-import swal from 'sweetalert';
+import swal from "sweetalert";
 import { withApollo } from "react-apollo";
-
 
 export class MaterialsPage extends Component {
   state = {
@@ -21,13 +25,13 @@ export class MaterialsPage extends Component {
 
   handleAddModalOpen = () => {
     this.setState({
-      addModalShow: true,
+      addModalShow: true
     });
   };
 
   handleAddModalClose = () => {
     this.setState({
-      addModalShow: false,
+      addModalShow: false
     });
   };
 
@@ -92,8 +96,6 @@ export class MaterialsPage extends Component {
     this.setState({ file });
   };
 
-
-
   handleEdit = (material, stuff) => {
     this.setState({
       modalShow: true,
@@ -107,19 +109,18 @@ export class MaterialsPage extends Component {
     swal({
       title: "¿Estás seguro de que deseas eliminar?",
       buttons: true,
-      dangerMode: true,
-    }).then( async (value) => {
-        if(value===null){
-        }
-        else {
-          this.props.client
+      dangerMode: true
+    }).then(async value => {
+      if (value === null) {
+      } else {
+        this.props.client
           .mutate({
             mutation: DELETE_MATERIAL,
             variables: { id: selectedMaterial._id },
-            refetchQueries:[{ query: GET_MATERIALS }]
+            refetchQueries: [{ query: GET_MATERIALS }]
           })
           .then(data => {
-            console.log(data)
+            console.log(data);
             // console.log(data.data.deleteMaterialGroup._id);
             swal(
               "Proceso de eliminado exitoso!",
@@ -134,11 +135,10 @@ export class MaterialsPage extends Component {
               "Notificar al programador!",
               "error"
             );
-          });    
-        }
-    })
+          });
+      }
+    });
   };
-
 
   handleModalClose = () => this.setState({ modalShow: false });
 
@@ -149,52 +149,60 @@ export class MaterialsPage extends Component {
         accessor: "fromExcel",
         filterable: true,
         filterMethod: (filter, row) =>
-          (!row[filter.id]).toString().toLowerCase().includes(filter.value.toLowerCase()),
-        Cell: row => 
-        <div style={{ textAlign: "center" }}>
-        {row.value?"ContPaq":"Originales"}
-        </div>
+          (!row[filter.id])
+            .toString()
+            .toLowerCase()
+            .includes(filter.value.toLowerCase()),
+        Cell: row => (
+          <div style={{ textAlign: "center" }}>
+            {row.value ? "ContPaq" : "Originales"}
+          </div>
+        )
       },
       // CONTPAQ
       {
         Header: "Clave",
         accessor: "materialKey",
         filterable: true,
-        filterMethod: (filter, row) =>{
-          if(row[filter.id]===null){
-            if("indefinido".includes(filter.value)){
-              console.log(row[filter.id])
-              return(true)
+        filterMethod: (filter, row) => {
+          if (row[filter.id] === null) {
+            if ("indefinido".includes(filter.value)) {
+              console.log(row[filter.id]);
+              return true;
             }
-          }
-          else{
-            return(row[filter.id].toLowerCase().includes(filter.value.toLowerCase()))
+          } else {
+            return row[filter.id]
+              .toLowerCase()
+              .includes(filter.value.toLowerCase());
           }
         },
-        Cell: row => 
-        <div style={{ textAlign: "center" }}>
-        {row.value===null?"indefinido":row.value}
-        </div>  
+        Cell: row => (
+          <div style={{ textAlign: "center" }}>
+            {row.value === null ? "indefinido" : row.value}
+          </div>
+        )
       },
       {
         Header: "Nombre",
         accessor: "name",
         filterable: true,
-        filterMethod: (filter, row) =>{
-          if(row[filter.id]===null){
-            if("indefinido".includes(filter.value)){
-              console.log(row[filter.id])
-              return(true)
+        filterMethod: (filter, row) => {
+          if (row[filter.id] === null) {
+            if ("indefinido".includes(filter.value)) {
+              console.log(row[filter.id]);
+              return true;
             }
-          }
-          else{
-            return(row[filter.id].toLowerCase().includes(filter.value.toLowerCase()))
+          } else {
+            return row[filter.id]
+              .toLowerCase()
+              .includes(filter.value.toLowerCase());
           }
         },
-        Cell: row => 
-        <div style={{ textAlign: "center" }}>
-        {row.value===null?"indefinido":row.value}
-        </div>  
+        Cell: row => (
+          <div style={{ textAlign: "center" }}>
+            {row.value === null ? "indefinido" : row.value}
+          </div>
+        )
       },
       {
         Header: "Unidad",
@@ -226,13 +234,13 @@ export class MaterialsPage extends Component {
               onClick={() => this.handleEdit(row.original, this)}
               className="edit-btn"
             >
-              <FontAwesomeIcon icon={['fa', 'edit']} size={"1x"}/>
+              <FontAwesomeIcon icon={["fa", "edit"]} size={"1x"} />
             </button>
             <button
               onClick={() => this.handleDelete(row.original)}
               className="danger-btn"
             >
-              <FontAwesomeIcon icon={['fa', 'trash']} size={"1x"}/>
+              <FontAwesomeIcon icon={["fa", "trash"]} size={"1x"} />
             </button>
           </div>
         )
@@ -246,55 +254,97 @@ export class MaterialsPage extends Component {
           {this.state.loading ? (
             <Spinner />
           ) : (
-              <form
-                className="materials-import"
-                onSubmit={this.submitHandler}
-                encType="multipart/form-data"
-              >
-                <input
-                  accept=".xlsx"
-                  onChange={this.changeInputHandler}
-                  type="file"
-                />
-                <button type="submit" className="submit-btn">
-                  Importar materiales
+            <form
+              className="materials-import"
+              onSubmit={this.submitHandler}
+              encType="multipart/form-data"
+            >
+              <input
+                accept=".xlsx"
+                onChange={this.changeInputHandler}
+                type="file"
+              />
+              <button type="submit" className="submit-btn">
+                Importar materiales
               </button>
-              </form>
-            )}
+            </form>
+          )}
 
-          <div style={{ position: 'fixed', top: 110, right: 20, zIndex: 10 }}>
+          <div style={{ position: "fixed", top: 110, right: 20, zIndex: 10 }}>
             <button className="submit-btn" onClick={this.handleAddModalOpen}>
-              <FontAwesomeIcon icon={['fas', 'plus']} size={"2x"} />
+              <FontAwesomeIcon icon={["fas", "plus"]} size={"2x"} />
             </button>
           </div>
 
           {/* ADD */}
           <Mutation
             mutation={ADD_MATERIAL}
-            update={(cache, { data: { addMaterial } }) => {
+            update={(cache, { data: { createMaterial } }) => {
               let { materials } = cache.readQuery({ query: GET_MATERIALS });
-              materials.push(addMaterial);
               cache.writeQuery({
                 query: GET_MATERIALS,
-                data: { materials }
+                data: { materials: materials.concat([createMaterial]) }
+                // https://www.apollographql.com/docs/react/essentials/mutations/
               });
             }}
           >
-            {addMaterial => (
+            {createMaterial => (
               <MaterialModal
                 show={this.state.addModalShow}
                 onHide={this.handleAddModalClose}
-                onConfirm={(material) => {
-                  addMaterial({
-                    variables: {
-                      ...material,
-                      totalPrice: +material.totalPrice,
-                      unitPrice: +material.unitPrice,
-                      quantity: +material.quantity,
-                      fromExcel: false
+                onConfirm={material => {
+                  let condition =
+                    material.materialKey === null ||
+                    material.materialKey.length === 0;
+                  condition |=
+                    material.unitPrice == null ||
+                    material.unitPrice.length === 0;
+                  condition |=
+                    material.name == null || material.name.length === 0;
+                  condition |=
+                    material.materialKeySubIndex == null ||
+                    material.materialKeySubIndex.length === 0;
+                  if (condition) {
+                    swal(
+                      `Favor de llenar los campos de nombre, clave, precio unitario y seleccionar Codigo`,
+                      "Valores no nulos",
+                      "error"
+                    );
+                  } else {
+                    if (
+                      !material.unitPrice ||
+                      isNaN(Number(material.unitPrice)) ||
+                      Number(material.unitPrice) <= 0
+                    ) {
+                      swal(
+                        `Favor de ingresar un numero mayor a 0`,
+                        ` usted ingreso: ${material.quantity}`,
+                        "error"
+                      );
+                    } else {
+                      material.materialKey =
+                        material.materialKeySubIndex + material.materialKey;
+                      console.log("grabando");
+                      console.log(material);
+                      createMaterial({
+                        variables: {
+                          ...material,
+                          totalPrice: +material.totalPrice,
+                          unitPrice: +material.unitPrice,
+                          quantity: +material.quantity,
+                          fromExcel: false
+                        }
+                      });
+                      swal(
+                        `Proceso de adicion de material: "${
+                          material.materialKey
+                        }" exitoso!`,
+                        "Su informacion se ha removido!",
+                        "success"
+                      );
+                      this.setState({ addModalShow: false });
                     }
-                  });
-                  this.setState({ addModalShow: false });
+                  }
                 }}
               />
             )}
@@ -335,13 +385,13 @@ export class MaterialsPage extends Component {
                 show={this.state.modalShow}
                 onHide={this.handleModalClose}
                 material={this.state.selectedMaterial}
-                onConfirm={(material) => {
+                onConfirm={material => {
                   updateMaterial({
                     variables: {
                       ...material,
                       totalPrice: +material.totalPrice,
                       unitPrice: +material.unitPrice,
-                      quantity: +material.quantity,
+                      quantity: +material.quantity
                     }
                   });
                   this.setState({ modalShow: false });
@@ -367,7 +417,7 @@ export class MaterialsPage extends Component {
             </Query>
           </div>
         </div>
-      </Layout >
+      </Layout>
     );
   }
 }

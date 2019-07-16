@@ -31,6 +31,8 @@ query MaterialGroup($id:ID!)
         materialGroupKey
         measurementUnit
         name
+        Mo
+        noMo
         auxMaterials{
           _id
           materialKey
