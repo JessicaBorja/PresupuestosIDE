@@ -33,6 +33,7 @@ query MaterialGroup($id:ID!)
         name
         Mo
         noMo
+        totalPrice
         auxMaterials{
           _id
           materialKey
