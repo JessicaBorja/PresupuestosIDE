@@ -31,14 +31,22 @@ export class UnitPage extends Component {
   updateTotalPrice=(materialGroup,materials)=>{
     console.log("updating")
     console.log(materialGroup)
+    let Mo=0;
+    let noMo=0;
     let totalPrice=0;
     materials.forEach(auxMaterial => {
         totalPrice += auxMaterial.totalPrice;
+        if(auxMaterial.materialKey.slice(0,2)==="MO")
+            Mo+=auxMaterial.totalPrice
+        else
+            noMo+=auxMaterial.totalPrice
     });
     materialGroup.totalPrice=totalPrice;
+    materialGroup.Mo=Mo;
+    materialGroup.noMo=noMo;
     console.log(totalPrice)
       return materialGroup;
-}
+  }
 
   handleEdit = selectedMaterial => {
     // swal("Proceso de edicion exitoso!", "Su informacion se ha removido!", "success");
@@ -114,11 +122,16 @@ export class UnitPage extends Component {
     }).then(async (data) => {
         console.log("added to db")
         console.log(data.data.createAuxMaterial)
+        console.log("materiales identificados para la sumatoria Mo y noMo")
+        console.log(materialGroup.auxMaterials)
+        materialGroup=this.updateTotalPrice(materialGroup,materialGroup.auxMaterials)
         materialGroup.auxMaterials.splice(-1,1)
+
         let materialGroupInDb=JSON.parse(JSON.stringify(materialGroup))
         materialGroupInDb.auxMaterials=materialGroup.auxMaterials.map((auxMaterial)=>{
             return auxMaterial._id
         })
+
         materialGroupInDb.auxMaterials.push(data.data.createAuxMaterial._id)
         materialGroup.auxMaterials.push(data.data.createAuxMaterial)
         console.log(materialGroup.auxMaterials)

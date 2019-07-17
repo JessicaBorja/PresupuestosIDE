@@ -110,8 +110,8 @@ mutation CreateAuxMaterial($name: String, $materialKey:String, $measurementUnit:
 
 
 export const UPDATE_UNIT = gql`
-mutation UpdateMaterialGroup($id:ID!,$name: String, $materialGroupKey:String!, $measurementUnit: String,$auxMaterials: [ID]){
-  updateMaterialGroup(id:$id,materialGroupInput: { name: $name, materialGroupKey:$materialGroupKey, measurementUnit: $measurementUnit,
+mutation UpdateMaterialGroup($id:ID!,$name: String, $materialGroupKey:String!, $totalPrice: Float,$Mo:Float, $noMo:Float,$measurementUnit: String,$auxMaterials: [ID]){
+  updateMaterialGroup(id:$id,materialGroupInput: { name: $name, materialGroupKey:$materialGroupKey, totalPrice:$totalPrice,Mo:$Mo, noMo:$noMo, measurementUnit: $measurementUnit,
       auxMaterials:$auxMaterials }){
         _id
     }
