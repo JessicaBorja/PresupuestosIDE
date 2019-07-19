@@ -8,6 +8,8 @@ export const GET_UNITS = gql`
       measurementUnit
       name
       totalPrice
+      Mo
+      noMo
       auxMaterials{
           _id
           name
@@ -39,6 +41,7 @@ export const DELETE_UNIT = gql`
 mutation DeleteMaterialGroup($id:ID!){
     deleteMaterialGroup(id:$id){
         _id
+        
     }
 }
 `;
@@ -54,20 +57,49 @@ mutation CreateMaterialGroupCopy($id:ID!,$materialGroupKey: String!, $measuremen
 // createMaterialGroupCopy(id: ID!, materialGroupInput: MaterialGroupInput!): MaterialGroup
 
 export const ADD_CONCEPT= gql`
-mutation CreateConcept($conceptKey: String!, $measurementUnit:String, $name: String,$auxMaterialGroups:[ID],$price:Float){
-  createConcept(conceptInput: { conceptKey: $conceptKey, measurementUnit:$measurementUnit,name: $name,price:$price,auxMaterialGroups:$auxMaterialGroups}){
+mutation CreateConcept($conceptKey: String!, $measurementUnit:String, $name: String,$auxMaterialGroups:[ID],$price:Float,$Mo:Float,$noMo:Float){
+  createConcept(conceptInput: { conceptKey: $conceptKey, measurementUnit:$measurementUnit,name: $name,price:$price,Mo:$Mo,noMo:$noMo,auxMaterialGroups:$auxMaterialGroups}){
         _id
+        price
+        Mo
+        noMo
+        auxMaterialGroups{
+          _id
+          quantity
+          unitPrice
+          totalPrice
+          Mo
+          noMo
+          materialGroup{
+            _id
+            name
+            materialGroupKey
+            Mo
+            noMo
+            totalPrice
+          }
+        }
     }
 }
 `;
 
 export const CREATE_AUXMATGROUP= gql`
-  mutation CreateAuxMaterialGroup($materialGroup:ID!,$quantity: Float, $unitPrice:Float, $totalPrice: Float){
-    createAuxMaterialGroup(auxMaterialGroupInput: { materialGroup: $materialGroup, quantity:$quantity, unitPrice: $unitPrice,totalPrice:$totalPrice}){
+  mutation CreateAuxMaterialGroup($materialGroup:ID!,$quantity: Float, $unitPrice:Float, $totalPrice: Float,$Mo:Float,$noMo:Float){
+    createAuxMaterialGroup(auxMaterialGroupInput: { materialGroup: $materialGroup, quantity:$quantity, unitPrice: $unitPrice,totalPrice:$totalPrice,Mo:$Mo,noMo:$noMo}){
           _id
           quantity
           unitPrice
           totalPrice
+          Mo
+          noMo
+          materialGroup{
+            _id
+            name
+            materialGroupKey
+            Mo
+            noMo
+            totalPrice
+          }
       }
     }
 `;

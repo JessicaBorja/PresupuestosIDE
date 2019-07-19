@@ -9,15 +9,22 @@ query Concept($id:ID!)
         measurementUnit
         conceptKey
         price
+        Mo
+        noMo
         auxMaterialGroups{
           _id
           quantity
           unitPrice
           totalPrice
+          Mo
+          noMo
           materialGroup{
             _id
             name
             materialGroupKey
+            Mo
+            noMo
+            totalPrice
           }
         }
       }
@@ -41,6 +48,10 @@ export const DELETE_AUXMATGROUP = gql`
 mutation DeleteAuxMaterialGroup($id:ID!){
   deleteAuxMaterialGroup(id:$id){
         _id
+        unitPrice
+        totalPrice
+        Mo
+        noMo
     }
 }
 `;
@@ -53,6 +64,8 @@ export const GET_AUXMATGROUPS = gql`
       measurementUnit
       name
       totalPrice
+      Mo
+      noMo
       auxMaterials{
           _id
           name
@@ -70,30 +83,38 @@ export const GET_AUXMATGROUPS = gql`
 
 
 export const CREATE_AUXMATGROUP= gql`
-  mutation CreateAuxMaterialGroup($materialGroup:ID!,$quantity: Float, $unitPrice:Float, $totalPrice: Float){
-    createAuxMaterialGroup(auxMaterialGroupInput: { materialGroup: $materialGroup, quantity:$quantity, unitPrice: $unitPrice,totalPrice:$totalPrice}){
+  mutation CreateAuxMaterialGroup($materialGroup:ID!,$quantity: Float, $unitPrice:Float, $totalPrice: Float,$Mo: Float,$noMo: Float){
+    createAuxMaterialGroup(auxMaterialGroupInput: { materialGroup: $materialGroup, quantity:$quantity, unitPrice: $unitPrice,totalPrice:$totalPrice,Mo:$Mo,noMo:$noMo}){
         _id
         quantity
         unitPrice
         totalPrice
+        Mo
+        noMo
         materialGroup{
           _id
           name
           materialGroupKey
+          noMo
+          Mo
+          totalPrice
         }
       }
     }
 `;
 export const UPDATE_CONCEPT= gql`
-mutation UpdateConcept($id:ID!,$conceptKey: String!, $measurementUnit:String, $name: String, $price:Float,$auxMaterialGroups: [ID]){
-  updateConcept(id:$id,conceptInput: { conceptKey: $conceptKey, measurementUnit:$measurementUnit, name: $name,price:$price,auxMaterialGroups:$auxMaterialGroups}){
+mutation UpdateConcept($id:ID!,$conceptKey: String!, $measurementUnit:String, $name: String, $price:Float,$Mo:Float,$noMo:Float,$auxMaterialGroups: [ID]){
+  updateConcept(id:$id,conceptInput: { conceptKey: $conceptKey, measurementUnit:$measurementUnit, name: $name,price:$price,Mo:$Mo,noMo:$noMo,auxMaterialGroups:$auxMaterialGroups}){
     _id
+    price
+    Mo
+    noMo
   }
 }
 `;
 export const UPDATE_AUXMAT= gql`
-mutation UpdateAuxMaterialGroup($id:ID!,$materialGroup: ID!, $quantity:Float, $unitPrice: Float, $totalPrice:Float){
-  updateAuxMaterialGroup(id:$id,auxMaterialGroupInput: { materialGroup: $materialGroup, quantity:$quantity, unitPrice: $unitPrice,totalPrice:$totalPrice}){
+mutation UpdateAuxMaterialGroup($id:ID!,$materialGroup: ID!, $quantity:Float, $unitPrice: Float, $totalPrice:Float,$Mo:Float,$noMo:Float){
+  updateAuxMaterialGroup(id:$id,auxMaterialGroupInput: { materialGroup: $materialGroup, quantity:$quantity, unitPrice: $unitPrice,totalPrice:$totalPrice,Mo:$Mo,noMo:$noMo}){
     _id
     materialGroup{
       _id
@@ -101,6 +122,8 @@ mutation UpdateAuxMaterialGroup($id:ID!,$materialGroup: ID!, $quantity:Float, $u
     quantity
     unitPrice
     totalPrice
+    Mo
+    noMo
   }
 }
 `;

@@ -31,9 +31,12 @@ export class ConceptsPage extends Component {
     componentDidMount=()=>{
         console.log("================pagina Detalle de conceptos")
     }
+
     handleEdit = (selectedAuxMaterialGroup) => {
         console.log("edit")
         console.log(selectedAuxMaterialGroup)
+        console.log(selectedAuxMaterialGroup.materialGroup)
+        let editedAuxMaterialGroup=JSON.parse(JSON.stringify(selectedAuxMaterialGroup))
         swal({
             title: "Ingresa cantidad",
             content: 'input',
@@ -47,27 +50,31 @@ export class ConceptsPage extends Component {
             }
             else {
                 console.log(`El valor seleccionado es ${value}`)
-                selectedAuxMaterialGroup.quantity=+value
-                selectedAuxMaterialGroup.totalPrice=+value*selectedAuxMaterialGroup.unitPrice
+                editedAuxMaterialGroup.quantity=+value
+                editedAuxMaterialGroup.totalPrice=+value*editedAuxMaterialGroup.unitPrice
+                editedAuxMaterialGroup.Mo=(+value)*(selectedAuxMaterialGroup.materialGroup.Mo)
+                editedAuxMaterialGroup.noMo=(+value)*(selectedAuxMaterialGroup.materialGroup.noMo)
+
                 console.log("modificado")
-                console.log(selectedAuxMaterialGroup)
+                console.log(editedAuxMaterialGroup)
                 let auxMaterialsGroups=JSON.parse(JSON.stringify(this.state.concept.auxMaterialGroups))
                 const materialGroupIndex = auxMaterialsGroups.findIndex(
-                  auxMaterialGroup => auxMaterialGroup._id === selectedAuxMaterialGroup._id
+                  auxMaterialGroup => auxMaterialGroup._id === editedAuxMaterialGroup._id
                 );
                 console.log(materialGroupIndex)
-                auxMaterialsGroups[materialGroupIndex]=selectedAuxMaterialGroup
+                auxMaterialsGroups[materialGroupIndex]=editedAuxMaterialGroup
                 let newConcept=this.state.concept
                 newConcept.auxMaterialGroups=auxMaterialsGroups
                 console.log("concepto editado enviado a db")
                 console.log(newConcept)
                 this.props.client.mutate({
                     mutation: UPDATE_AUXMAT,
-                    variables: { id:selectedAuxMaterialGroup._id,
-                        ...selectedAuxMaterialGroup,
-                        materialGroup:selectedAuxMaterialGroup.materialGroup._id
+                    variables: { id:editedAuxMaterialGroup._id,
+                        ...editedAuxMaterialGroup,
+                        materialGroup:editedAuxMaterialGroup.materialGroup._id
                     }
                 }).then(data => {
+                    console.log("=====updated auxMatGroup")
                     console.log(data.data.updateAuxMaterialGroup)
                     this.setState({concept:newConcept})
                     swal(
@@ -76,23 +83,6 @@ export class ConceptsPage extends Component {
                         "success"
                       );
                 }).catch((err) => { console.log(err) })
-            //     this.props.client.mutate({
-            //         mutation: UPDATE_CONCEPT,
-            //         variables: { id:newConcept._id,
-            //             ...newConcept,
-            //             auxMaterialGroups:newConcept.auxMaterialGroups.map((auxMaterialGroup)=>{
-            //                 return(auxMaterialGroup._id)
-            //             })
-            //         }
-            //     }).then(data => {
-            //         console.log(data.data.updateConcept._id)
-            //         this.setState({concept:newConcept})
-            //         swal(
-            //             "Proceso de actualizacion exitoso!",
-            //             "Su concepto se ha modificado!",
-            //             "success"
-            //           );
-            //     }).catch((err) => { console.log(err) })
             }
         })
       
@@ -106,18 +96,18 @@ export class ConceptsPage extends Component {
         console.log(selectedMaterialGroup)
         // let auxMaterialGroups = this.state.concept.auxMaterialGroups
         let auxMaterialGroups=JSON.parse(JSON.stringify(this.state.concept.auxMaterialGroups))
-
+        let addedMaterialGroup=JSON.parse(JSON.stringify(selectedMaterialGroup))
         // let materials = this.state.materialGroup.auxMaterials
-        console.log("busqueda de index")
-        console.log(`seleccionado: ${selectedMaterialGroup.materialGroupKey}`)
+        // console.log("busqueda de index")
+        // console.log(`seleccionado: ${selectedMaterialGroup.materialGroupKey}`)
 
         const materialGroupIndex = auxMaterialGroups.findIndex(
           (auxMaterialGroup) => {
-              console.log(auxMaterialGroup.materialGroup.materialGroupKey)
+            //   console.log(auxMaterialGroup.materialGroup.materialGroupKey)
               return auxMaterialGroup.materialGroup.materialGroupKey === selectedMaterialGroup.materialGroupKey
           }
         );
-        console.log(`index encontrado ${materialGroupIndex}`)
+        // console.log(`index encontrado ${materialGroupIndex}`)
         if (materialGroupIndex === -1) {
           swal({
             title: "Ingresa cantidad",
@@ -132,33 +122,39 @@ export class ConceptsPage extends Component {
             }
             else {
             console.log(`agregando cantidad: ${value}`)
-            let selectedAuxMaterialGroup={
-            }
-            selectedAuxMaterialGroup.materialGroup=selectedMaterialGroup._id
-            selectedAuxMaterialGroup.quantity=+value
-            selectedAuxMaterialGroup.unitPrice=+selectedMaterialGroup.totalPrice
-            selectedAuxMaterialGroup.totalPrice=+value*+selectedMaterialGroup.totalPrice
+            // let addedMaterialGroup={
+            // }
+            addedMaterialGroup.materialGroup=selectedMaterialGroup._id
+            addedMaterialGroup.quantity=+value
+            addedMaterialGroup.unitPrice=+selectedMaterialGroup.totalPrice
+            addedMaterialGroup.totalPrice=+value*+selectedMaterialGroup.totalPrice
+            addedMaterialGroup.Mo=(+value)*+(selectedMaterialGroup.Mo)
+            addedMaterialGroup.noMo=(+value)*+(selectedMaterialGroup.noMo)
 
-            auxMaterialGroups.push(selectedAuxMaterialGroup)
+            auxMaterialGroups.push(addedMaterialGroup)
+            console.log("lista consolidada de auxMaterial")
             console.log(auxMaterialGroups)
             await this.props.client.mutate({
                 mutation: CREATE_AUXMATGROUP,
                 variables:{
-                    ...selectedAuxMaterialGroup
+                    ...addedMaterialGroup
                 }
             }).then(data => {
-                console.log("material generado")
-                console.log(data.data.createAuxMaterialGroup)
+                console.log("auxMaterialGroup generado")
+                let auxMatGroupGen=data.data.createAuxMaterialGroup
+                console.log(auxMatGroupGen)
                 let newConcept=JSON.parse(JSON.stringify(this.state.concept))
-                // console.log("conceptoantes")
-                // console.log(this.state.concept)
                 let newAuxMaterialsGroups=JSON.parse(JSON.stringify(this.state.concept.auxMaterialGroups))
-                newAuxMaterialsGroups.push(data.data.createAuxMaterialGroup)
+                newAuxMaterialsGroups.push(auxMatGroupGen)
                 newConcept.auxMaterialGroups=newAuxMaterialsGroups
-                console.log("nuevos auxmaterials")
-                console.log(newAuxMaterialsGroups)
+                newConcept.price+=auxMatGroupGen.totalPrice
+                newConcept.Mo+=auxMatGroupGen.Mo
+                newConcept.noMo+=auxMatGroupGen.noMo
+                // console.log("nuevos auxmaterials")
+                // console.log(newAuxMaterialsGroups)
                 console.log("concepto generado enviado a db")
                 console.log(newConcept)
+                
                 this.props.client.mutate({
                     mutation: UPDATE_CONCEPT,
                     variables: { id:newConcept._id,
@@ -168,7 +164,8 @@ export class ConceptsPage extends Component {
                         })
                     }
                 }).then(data => {
-                    console.log(data.data.updateConcept._id)
+                    console.log("updated concept")
+                    console.log(data.data.updateConcept)
                     this.setState({concept:newConcept})
                     swal(
                         "Proceso de actualizacion exitoso!",
@@ -176,43 +173,7 @@ export class ConceptsPage extends Component {
                         "success"
                       );
                 }).catch((err) => { console.log(err) })
-
-                // console.log(data.data.createAuxMaterialGroup)
-                // newMaterialGroups.push(data.data.createAuxMaterialGroup)
-                // // uploaded++;
-                //     console.log("se cargaron todos")
-                //     let objeto = {
-                //         conceptKey: this.state.conceptKey,
-                //         name: this.state.description,
-                //         measurementUnit: this.state.unit,
-                //         auxMaterialGroups: newMaterialGroups.map((materialGroup)=>{return materialGroup._id})
-                //     }
-                //     console.log(objeto)
-                //     console.log("new material groups")
-                //     console.log(newMaterialGroups)
-                //     console.log(this.updateTotalPrice(objeto,newMaterialGroups))
-                //     objeto=this.updateTotalPrice(objeto,newMaterialGroups)
-                //     console.log("enviado a db")
-                //     console.log(objeto)
-                //     // this.props.client.mutate({
-                //     //     mutation: ADD_CONCEPT,
-                //     //     variables: { ...objeto }
-                //     // }).then(data => {
-                //     //     console.log(data.data.createConcept._id)
-                //     //     swal(
-                //     //         "Proceso de generacion exitoso!",
-                //     //         "Su concepto se ha añadido!",
-                //     //         "success"
-                //     //       );
-                //     // }).catch((err) => { console.log(err) })
-                
             }).catch((err) => { console.log(err) })    
-    
-            //   addMaterial.materialQuantity = Number(value);
-            //   addMaterial.totalPrice = Number(value) * Number(addMaterial.unitPrice);
-            //   materials.push(addMaterial)
-            //   materialGroup.auxMaterials = materials
-            //   this.addMaterialDb(materialGroup,addMaterial)
             }
           })
         }
@@ -228,7 +189,7 @@ export class ConceptsPage extends Component {
     }
 
     handleDelete = (selectedAuxMaterialGroup) => {
-        console.log("borrar")
+        console.log("====borrar auxMaterialGroup")
         console.log(selectedAuxMaterialGroup)
         swal({
             title: "¿Estás seguro de que deseas eliminar?",
@@ -244,20 +205,20 @@ export class ConceptsPage extends Component {
                   variables: { id: selectedAuxMaterialGroup._id },
                 })
                 .then(data => {
-                    console.log("borrado")
+                console.log("elemento que fue borrado")
                   console.log(data.data.deleteAuxMaterialGroup)
                   let auxMaterialsGroups=this.state.concept.auxMaterialGroups
                   const materialGroupIndex = auxMaterialsGroups.findIndex(
                     auxMaterialGroup => auxMaterialGroup._id === selectedAuxMaterialGroup._id
                   );
-                  console.log(materialGroupIndex)
+                //   console.log(materialGroupIndex)
                   function spliceNoMutate(myArray, indexToRemove) {
                       return myArray.slice(0, indexToRemove).concat(myArray.slice(indexToRemove + 1));
                   }
                   let newConcept=this.state.concept
                   let newAuxMaterialsGroups = spliceNoMutate(auxMaterialsGroups, materialGroupIndex)
                   newConcept.auxMaterialGroups=newAuxMaterialsGroups
-                  console.log(newAuxMaterialsGroups)
+                //   console.log(newAuxMaterialsGroups)
                   this.setState({
                     concept: newConcept
                   })
@@ -280,6 +241,14 @@ export class ConceptsPage extends Component {
 
     render() {
         const columns = [
+            {
+                Header: "Clave",
+                accessor: "materialGroup.materialGroupKey",
+                Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
+                // filterable: true,
+                // filterMethod: (filter, row) =>
+                //     row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
+            },
             {
                 Header: "Nombre",
                 accessor: "materialGroup.name",
@@ -386,16 +355,16 @@ export class ConceptsPage extends Component {
                             query={GET_CONCEPT}
                             variables={{ id: this.props.match.params.id }}
                             onCompleted={data => {
-                                console.log("al terminar")
+                                console.log(` al terminar busqueda concepto: ${this.props.match.params.id}`)
                                 console.log(data.concept.auxMaterialGroups)
                                 this.setState({ concept: data.concept })
                             }}
                         >
                             {({ loading, error, data }) => {
-                                console.log("CONCEPTO")
-                                // console.log(data)
-                                // console.log(data.concept)
-                                console.log(this.state.concept)
+                                // console.log("CONCEPTO")
+                                // // console.log(data)
+                                // // console.log(data.concept)
+                                // console.log(this.state.concept)
                                 if (loading) return <Spinner />;
                                 if (error) return <p>Error :( recarga la página!</p>;
                                 return (
@@ -425,8 +394,8 @@ export class ConceptsPage extends Component {
                             }}
                         >
                             {({ loading, error, data }) => {
-                                console.log("auxMaterialsGroupsInDb")
-                                console.log(data.materialGroups)
+                                // console.log("auxMaterialsGroupsInDb")
+                                // console.log(data.materialGroups)
                                 // console.log(data.concept)
                                 // console.log(this.state.concept)
                                 if (loading) return <Spinner />;

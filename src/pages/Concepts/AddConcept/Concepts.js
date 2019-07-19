@@ -36,7 +36,7 @@ export class ConceptsPage extends Component {
             query: GET_CONCEPTS,
             })
             .then(data => {
-                console.log(data.data.concepts)
+                // console.log(data.data.concepts)
                 this.setState({
                     concepts:data.data.concepts
                 })
@@ -48,6 +48,9 @@ export class ConceptsPage extends Component {
 
     componentDidMount=()=>{
         console.log("\n====Pagina de Conceptos\n")
+        //para hacer multiples generaciones
+        uploaded=0;
+        newMaterialGroups = []
         this.searchUnits();
     }
 
@@ -55,11 +58,19 @@ export class ConceptsPage extends Component {
         console.log("updating")
         console.log(materialGroup)
         let totalPrice=0;
+        let Mo=0;
+        let noMo=0;
         materials.forEach(auxMaterial => {
+            // console.log("=auxmaterial")
+            // console.log(auxMaterial)
             totalPrice += auxMaterial.totalPrice;
+            Mo += auxMaterial.Mo;
+            noMo += auxMaterial.noMo;
         });
         materialGroup.price=totalPrice;
-        console.log(totalPrice)
+        materialGroup.Mo=Mo;
+        materialGroup.noMo=noMo;
+        // console.log(totalPrice)
           return materialGroup;
     }
 
@@ -71,21 +82,26 @@ export class ConceptsPage extends Component {
     }
 
     addMaterialToDb=async (materialGroup)=>{
+        console.log("=========addMaterialToDb")
+        console.log(materialGroup)
         let auxMaterialGroupInput={
             materialGroup:materialGroup._id,
             quantity:+materialGroup.quantity,
             unitPrice:materialGroup.unitPrice,
             totalPrice:materialGroup.totalPrice,
+            Mo:materialGroup.Mo,
+            noMo:materialGroup.noMo,
         }
-        console.log("materialgroup")
-        console.log(auxMaterialGroupInput)
+        // console.log("materialgroup")
+        // console.log(auxMaterialGroupInput)
         await this.props.client.mutate({
             mutation: CREATE_AUXMATGROUP,
             variables:{
                 ...auxMaterialGroupInput
             },
         }).then(data => {
-            console.log(data)
+            // console.log(data)
+            console.log("==createdAuxMaterialGroup")
             console.log(data.data.createAuxMaterialGroup)
             newMaterialGroups.push(data.data.createAuxMaterialGroup)
             uploaded++;
@@ -97,13 +113,12 @@ export class ConceptsPage extends Component {
                     measurementUnit: this.state.unit,
                     auxMaterialGroups: newMaterialGroups.map((materialGroup)=>{return materialGroup._id})
                 }
-                console.log(objeto)
-                console.log("new material groups")
-                console.log(newMaterialGroups)
-                console.log(this.updateTotalPrice(objeto,newMaterialGroups))
+                // console.log(objeto)
+                // console.log("new material groups")
+                // console.log(newMaterialGroups)
                 objeto=this.updateTotalPrice(objeto,newMaterialGroups)
-                console.log("enviado a db")
-                console.log(objeto)
+                // console.log("enviado a db")
+                // console.log(objeto)
                 //     concepto.auxMaterials=materials
                 //     this.saveUnit(concepto)
                 this.props.client.mutate({
@@ -111,7 +126,8 @@ export class ConceptsPage extends Component {
                     variables: { ...objeto },
                     refetchQueries:[{ query: GET_CONCEPTS }]
                 }).then(data => {
-                    console.log(data.data.createConcept._id)
+                    console.log("===========concepto creado")
+                    console.log(data.data.createConcept)
                     swal(
                         "Proceso de generacion exitoso!",
                         "Su concepto se ha añadido!",
@@ -125,8 +141,8 @@ export class ConceptsPage extends Component {
     }
     
     handleSave =  () => {
-        console.log("antes")
-        console.log(this.state.materialGroupsInConcept)
+        // console.log("antes")
+        // console.log(this.state.materialGroupsInConcept)
 
         let condition=this.state.description===null||this.state.description.length===0
         condition|=this.state.conceptKey==null||this.state.conceptKey.length===0
@@ -140,12 +156,12 @@ export class ConceptsPage extends Component {
         else{
             console.log("grabando")
             console.log(this.state.conceptKey)
-            console.log(this.state.concepts)
+            // console.log(this.state.concepts)
             let concepts=JSON.parse(JSON.stringify(this.state.concepts))
             const conceptIndex = concepts.findIndex(
                 concept => concept.conceptKey === this.state.conceptKey
             );
-            console.log(conceptIndex)
+            // console.log(conceptIndex)
             if(conceptIndex===-1){
                 console.log("clave de concepto nueva")
                 this.state.materialGroupsInConcept.forEach(async (materialGroup)=>{
@@ -177,7 +193,7 @@ export class ConceptsPage extends Component {
             }
             else {
                 console.log(value)
-                let materialGroups = this.state.materialGroupsInConcept
+                let materialGroups = JSON.parse(JSON.stringify(this.state.materialGroupsInConcept))
 
                 const materialGroupIndex = materialGroups.findIndex(
                     materialGroup => materialGroup._id === selectedMaterialGroup._id
@@ -185,7 +201,10 @@ export class ConceptsPage extends Component {
                 console.log(materialGroupIndex)
                 materialGroups[materialGroupIndex].quantity = value
                 materialGroups[materialGroupIndex].totalPrice=(+value)*(+materialGroups[materialGroupIndex].unitPrice)
-
+                materialGroups[materialGroupIndex].Mo=(+value)*(+materialGroups[materialGroupIndex].Mo)
+                materialGroups[materialGroupIndex].noMo=(+value)*(+materialGroups[materialGroupIndex].noMo)
+                console.log("---modificado")
+                console.log(materialGroups[materialGroupIndex])
                 this.setState({
                     materialGroupsInConcept: materialGroups
                 })
@@ -197,49 +216,79 @@ export class ConceptsPage extends Component {
     handleDelete = (selectedMaterialGroup) => {
         console.log("borrar")
         console.log(selectedMaterialGroup)
-        let materialGroups = this.state.materialGroupsInConcept
+        let materialGroups = JSON.parse(JSON.stringify(this.state.materialGroupsInConcept))
         const materialGroupIndex = materialGroups.findIndex(
             materialGroup => materialGroup._id === selectedMaterialGroup._id
         );
+
         console.log(materialGroupIndex)
+        // materialGroups[materialGroupIndex].totalPrice-=selectedMaterialGroup.totalPrice
+        // materialGroups[materialGroupIndex].Mo-=selectedMaterialGroup.Mo
+        // materialGroups[materialGroupIndex].noMo-=selectedMaterialGroup.noMo
+
         function spliceNoMutate(myArray, indexToRemove) {
             return myArray.slice(0, indexToRemove).concat(myArray.slice(indexToRemove + 1));
         }
         let newMaterialGroups = spliceNoMutate(materialGroups, materialGroupIndex)
+        console.log("materialGroupsBorrado")
         console.log(newMaterialGroups)
         this.setState({
             materialGroupsInConcept: newMaterialGroups
         })
+
+        
+
+        // let materialGroups = this.state.materialGroupsInConcept
+
+        // const materialGroupIndex = materialGroups.findIndex(
+        //     materialGroup => materialGroup._id === selectedMaterialGroup._id
+        // );
+        // console.log(materialGroupIndex)
+        // materialGroups[materialGroupIndex].quantity = value
+        // materialGroups[materialGroupIndex].totalPrice=(+value)*(+materialGroups[materialGroupIndex].unitPrice)
+        // materialGroups[materialGroupIndex].Mo=(+value)*(+materialGroups[materialGroupIndex].Mo)
+        // materialGroups[materialGroupIndex].noMo=(+value)*(+materialGroups[materialGroupIndex].noMo)
+        // console.log("---modificado")
+        // console.log(materialGroups[materialGroupIndex])
+        // this.setState({
+        //     materialGroupsInConcept: materialGroups
+        // })
     }
 
-    handleAdd = (addConcept) => {
-        console.log("concepto")
-        console.log(addConcept)
-        let materialGroups = this.state.materialGroupsInConcept
+    handleAdd = (selectedUnit) => {
+        console.log("precio Unitario a agregar")
+        console.log(selectedUnit)
+        //se hace copia para evitar que al manipular se modifique en las 2 tablas el valor de los atributos
+        let addUnit=JSON.parse(JSON.stringify(selectedUnit))
+        let materialGroups = JSON.parse(JSON.stringify(this.state.materialGroupsInConcept))
         const materialGroupIndex = materialGroups.findIndex(
-            materialGroup => materialGroup._id === addConcept._id
+            materialGroup => materialGroup._id === addUnit._id
         );
-        console.log("found")
-        console.log(materialGroupIndex)
-        console.log(materialGroups)
+        // console.log("found")
+        // console.log(materialGroupIndex)
+        // console.log(materialGroups)
         if (materialGroupIndex === -1) {
             swal({
                 title: "Ingresa cantidad",
                 content: 'input',
-                inputValue: "valor",
-                showCancelButton: true,
-            }).then((value) => {
-                if (!value || isNaN(Number(value)) || Number(value) <= 0) {
+                buttons: true,
+                dangerMode: true,
+            }).then( async (value) => {
+                if(value===null){
+                }
+                else if( isNaN(Number(value)) || Number(value) <= 0) {
                     swal(`Favor de ingresar un numero mayor a 0, usted ingreso: ${value}`);
                 }
                 else {
-                    console.log(value)
-                    addConcept.quantity = value
-                    addConcept.unitPrice=+addConcept.totalPrice
-                    addConcept.totalPrice=(+value)*(+addConcept.unitPrice)
-                    console.log("addConcept")
-                    console.log(addConcept)
-                    materialGroups.push(addConcept)
+                    // console.log(value)
+                    addUnit.quantity = value
+                    addUnit.unitPrice=+addUnit.totalPrice
+                    addUnit.totalPrice=(+value)*(+addUnit.unitPrice)
+                    addUnit.Mo=(+value)*(+addUnit.Mo)
+                    addUnit.noMo=(+value)*(+addUnit.noMo)
+                    console.log("addedUnit")
+                    console.log(addUnit)
+                    materialGroups.push(addUnit)
                     this.setState({ materialGroupsInConcept: materialGroups })
                     // addMaterial.materialQuantity=Number(value);
                     // addMaterial.subtotal=Number(value)*Number(addMaterial.unitPrice);
