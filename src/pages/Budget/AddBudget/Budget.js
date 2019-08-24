@@ -92,11 +92,69 @@ export class BudgetPage extends Component {
         seccion => seccion._id === Id
     );
     secciones[seccionIndex][name]=event.target.value
+    console.log(secciones[seccionIndex].precioUnitario)
+    console.log(secciones[seccionIndex].cantidadPartida)
+    secciones[seccionIndex].subtotal=(+(secciones[seccionIndex].cantidadPartida)*+(secciones[seccionIndex].precioUnitario)).toFixed(2);
+    secciones[seccionIndex].importeTotal=(+(secciones[seccionIndex].cantidadPartida)*+(secciones[seccionIndex].precioUnitario)).toFixed(2);
+
     this.setState({
       partidas:secciones
     })
     // console.log(`modifico ${seccionIndex}`);
     console.log(secciones)
+  }
+
+  handleConceptChange=(Id, ConceptId, name,event)=> {
+    console.log(`this,partida._id,concepto._id,"quantity"`)
+    console.log( `partida modificada ${Id} parametro modificado ${name} a ${event.target.value}`);
+    console.log( `ConceptId ${ConceptId}`)
+    let secciones=JSON.parse(JSON.stringify(this.state.partidas))
+
+    //====detectando partida a modificar
+      const seccionIndex = secciones.findIndex(
+        seccion => seccion._id === Id
+    );
+    console.log(secciones[seccionIndex])
+    // console.log(secciones[seccionIndex].conceptos)
+
+    //===Detectando concepto a modificar
+    const ConceptIndex = secciones[seccionIndex].conceptos.findIndex(
+      concepto => concepto._id === ConceptId
+    );
+
+    //===cambiando valor
+    if(name==="quantity")
+    secciones[seccionIndex].conceptos[ConceptIndex][name]=+(event.target.value)
+      else{
+        secciones[seccionIndex].conceptos[ConceptIndex][name]=(event.target.value)
+      }
+
+    console.log(secciones[seccionIndex].conceptos[ConceptIndex])
+    secciones[seccionIndex].conceptos[ConceptIndex].totalPrice=+(secciones[seccionIndex].conceptos[ConceptIndex].price)*+(secciones[seccionIndex].conceptos[ConceptIndex].quantity)
+    let totalPrice=0;
+
+    //====actualizando precio total en base amodificacion
+    secciones[seccionIndex].conceptos.forEach(concepto => {
+      totalPrice+=concepto.totalPrice;
+    });
+    console.log(totalPrice)
+    secciones[seccionIndex].precioUnitario=totalPrice.toFixed(2);
+    secciones[seccionIndex].subtotal=(+(secciones[seccionIndex].cantidadPartida)*+(totalPrice)).toFixed(2);
+    secciones[seccionIndex].importeTotal=(+(secciones[seccionIndex].cantidadPartida)*+(totalPrice)).toFixed(2);
+
+
+    this.setState({
+      partidas:secciones
+    })
+    
+    // secciones[seccionIndex].precioUnitario
+
+    // secciones[seccionIndex][name]=event.target.value
+    // this.setState({
+    //   partidas:secciones
+    // })
+    // // console.log(`modifico ${seccionIndex}`);
+    // console.log(secciones)
   }
 
   handleSave=()=>{
@@ -130,6 +188,8 @@ export class BudgetPage extends Component {
         valor.totalPrice=(+value)*(+valor.price);
         valor.mo=0;
         valor.noMo=0;
+        valor.description=""
+        valor.notas=""
         // console.log(seccionIndex)
         // console.log( secciones)
         secciones[seccionIndex].conceptos.push(valor)
@@ -256,7 +316,7 @@ export class BudgetPage extends Component {
               <div className='child2'>Subtotal</div>
               <div className='child2'>Importe Total</div>
             </Row>
-            {this.state.partidas.map((partida,i)=>{
+            {this.state.partidas.map((partida,x)=>{
               // console.log(partida)
               return (
               <div key={partida._id}>
@@ -285,13 +345,25 @@ export class BudgetPage extends Component {
                       partida.conceptos.map((concepto,i)=>{
                         return (
                           <Row noGutters className="concept" key={concepto._id}>
-                            <div className='concept-child' style={{width:"100%"}}>Descripcion de concepto 1.01</div>
-                            <div className='concept-child' style={{width:"100%"}}>Notas 1.01</div>
-                            <div className='concept-child' style={{width:"12%",backgroundColor:"#699c9c"}}>1.01</div>
+                            <div className='concept-child' style={{width:"100%"}}>
+                              <Form.Control type="text" placeholder={`Descripcion de concepto ${x+1}.0${i+1}`} 
+                                onChange={this.handleConceptChange.bind(this,partida._id,concepto._id,"descripcion")}/>
+                                  {/* Descripcion de concepto {x+1}.0{i+1} */}
+                            </div>
+                            <div className='concept-child' style={{width:"100%"}}>
+                              <Form.Control type="text" placeholder={`Notas ${x+1}.0${i+1}`} 
+                                onChange={this.handleConceptChange.bind(this,partida._id,concepto._id,"notas")}/>
+                            </div>
+                            {/* <div className='concept-child' style={{width:"100%"}}>Notas {x+1}.0{i+1}</div> */}
+                            <div className='concept-child' style={{width:"12%",backgroundColor:"#699c9c"}}>{x+1}.0{i+1}</div>
                             <div className='concept-child' style={{width:"12%",backgroundColor:"#699c9c"}}>{concepto.conceptKey}</div>
                             <div className='concept-child' style={{width:"12%",backgroundColor:"#699c9c"}}>{concepto.name}</div>
                             <div className='concept-child' style={{width:"12%",backgroundColor:"#699c9c"}}>{concepto.measurementUnit}</div>
-                            <div className='concept-child' style={{width:"12%"}}>{concepto.quantity}</div>
+                            {/* <div className='concept-child' style={{width:"12%"}}>{concepto.quantity}</div> */}
+                            <div className='concept-child' style={{width:"12%" ,backgroundColor:"#699c9c"}}>
+                              <Form.Control type="email" placeholder={concepto.quantity} 
+                              onChange={this.handleConceptChange.bind(this,partida._id,concepto._id,"quantity")}/>
+                            </div>
                             <div className='concept-child' style={{width:"12%",backgroundColor:"#699c9c"}}>{concepto.price.toFixed(2)}</div>
                             <p >hola</p>
                           </Row>
