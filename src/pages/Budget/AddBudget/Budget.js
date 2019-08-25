@@ -173,6 +173,27 @@ export class BudgetPage extends Component {
     let secciones=JSON.parse(JSON.stringify(this.state.partidas))
     // console.log(secciones)
     console.log(info)
+    secciones.splice(-1,1)
+    console.log(secciones)
+
+    // let seccionesMod=secciones.map((seccion)=>{
+    //   let seccionMod = [seccion.descripcion,seccion.unidad,seccion.cantidadPartida,seccion.precioUnitario,seccion.importeTotal]
+    //   return seccionMod;
+    // })
+
+    let seccionesMod=[]
+    secciones.forEach((seccion)=>{
+      let actualSeccion=[seccion.descripcion,seccion.unidad,seccion.cantidadPartida,seccion.precioUnitario,seccion.importeTotal]
+      seccionesMod.push(actualSeccion)
+      console.log(seccion.conceptos)
+      seccion.conceptos.forEach((concepto)=>{
+        let concepto1=[concepto.descripcion,concepto.measurementUnit,concepto.quantity,concepto.price,concepto.totalPrice,concepto.notas]
+        seccionesMod.push(concepto1)
+      })
+    })
+
+    console.log(seccionesMod)
+
     var wb = XLSX.utils.book_new();
     wb.Props = {
       Title: "SheetJS Tutorial",
@@ -184,9 +205,11 @@ export class BudgetPage extends Component {
     wb.SheetNames.push("Materiales");
 
     console.log(wb.SheetNames)
-    var ws_data = [['hello' , 'world'],
-      ['hello' , 'world','world2'],
-      info
+    var ws_data = [
+      // ['hello' , 'world'],
+      // ['hello' , 'world','world2'],
+      info,
+      ...seccionesMod
     ];  
 
     var ws_data2 = [['hello' , 'world'],
