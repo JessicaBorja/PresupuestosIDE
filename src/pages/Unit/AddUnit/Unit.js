@@ -35,6 +35,7 @@ export class UnitPage extends Component {
 
     componentDidMount=()=>{
         console.log("\n====pagina de precios unitarios\n")
+        subidos=0;
         this.searchUnits();
     }
 
@@ -413,6 +414,8 @@ export class UnitPage extends Component {
                             }}>Edicion Unitarios</Button>  
                         </Col>
                     </Row>
+
+                    <h1>Agregar Material</h1>
 
                     {this.state.materialsInConcept.length>0 && <div className="materials-table-cont">
                         <ReactTable

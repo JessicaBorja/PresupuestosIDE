@@ -11,6 +11,7 @@
     "@material-ui/icons": "^4.2.1",
     "apollo-boost": "^0.4.2",
     "bootstrap": "^4.3.1",
+    "file-saver": "^2.0.2",
     "graphql": "^14.3.1",
     "graphql-tag": "^2.10.1",
     "react": "^16.8.6",
@@ -21,7 +22,8 @@
     "react-router-dom": "^5.0.1",
     "react-scripts": "3.0.1",
     "react-table": "^6.10.0",
-    "sweetalert": "^2.1.2"
+    "sweetalert": "^2.1.2",
+    "xlsx": "^0.15.1"
   },
   "scripts": {
     "start": "react-scripts start",

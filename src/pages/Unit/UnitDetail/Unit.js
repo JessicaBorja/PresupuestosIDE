@@ -61,44 +61,54 @@ export class UnitPage extends Component {
   handleDelete = selectedMaterial => {
     // swal("Proceso de eliminado exitoso!", "Su informacion se ha removido!", "success");
     // swal("Proceso de eliminado no exitoso!", "Notificar al programador!", "error");
-    this.props.client
-      .mutate({
-        mutation: DELETE_MATERIAL,
-        variables: { id: selectedMaterial._id }
-      })
-      .then(data => {
-        // console.log(data.data.deleteMaterialGroup._id)
-        console.log(data)
-        let auxMaterials=this.state.materialGroup.auxMaterials
-        const materialIndex = auxMaterials.findIndex(
-          material => material._id === selectedMaterial._id
-        );
-        console.log(materialIndex)
-        function spliceNoMutate(myArray, indexToRemove) {
-            return myArray.slice(0, indexToRemove).concat(myArray.slice(indexToRemove + 1));
+    swal({
+      title: "¿Estás seguro de que deseas eliminar?",
+      buttons: true,
+      dangerMode: true,
+    }).then( async (value) => {
+        if(value===null){
         }
-        let newAuxMaterials = spliceNoMutate(auxMaterials, materialIndex)
-        let newMaterialGroup=this.state.materialGroup
-        newMaterialGroup.auxMaterials=newAuxMaterials
-        console.log(newMaterialGroup)
-        this.setState({
-          materialGroup: newMaterialGroup
-        })
+        else {
+          this.props.client
+            .mutate({
+              mutation: DELETE_MATERIAL,
+              variables: { id: selectedMaterial._id }
+            })
+            .then(data => {
+              // console.log(data.data.deleteMaterialGroup._id)
+              console.log(data)
+              let auxMaterials=this.state.materialGroup.auxMaterials
+              const materialIndex = auxMaterials.findIndex(
+                material => material._id === selectedMaterial._id
+              );
+              console.log(materialIndex)
+              function spliceNoMutate(myArray, indexToRemove) {
+                  return myArray.slice(0, indexToRemove).concat(myArray.slice(indexToRemove + 1));
+              }
+              let newAuxMaterials = spliceNoMutate(auxMaterials, materialIndex)
+              let newMaterialGroup=this.state.materialGroup
+              newMaterialGroup.auxMaterials=newAuxMaterials
+              console.log(newMaterialGroup)
+              this.setState({
+                materialGroup: newMaterialGroup
+              })
 
-    
-        swal(
-          "Proceso de eliminado exitoso!",
-          "Su informacion se ha removido!",
-          "success"
-        );
-      })
-      .catch(err => {
-        swal(
-          "Proceso de eliminado no exitoso!",
-          "Notificar al programador!",
-          "error"
-        );
-      });
+          
+              swal(
+                "Proceso de eliminado exitoso!",
+                "Su informacion se ha removido!",
+                "success"
+              );
+            })
+            .catch(err => {
+              swal(
+                "Proceso de eliminado no exitoso!",
+                "Notificar al programador!",
+                "error"
+              );
+            });
+        }
+    })
   };
 
   handleSave = () => {

@@ -300,17 +300,18 @@ export class ConceptsPage extends Component {
         ];
 
         const columns2 = [
+   
             {
-                Header: "Nombre",
-                accessor: "name",
+                Header: "Clave",
+                accessor: "materialGroupKey",
                 Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
                 filterable: true,
                 filterMethod: (filter, row) =>
                     row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
             },
             {
-                Header: "Clave",
-                accessor: "materialGroupKey",
+                Header: "Nombre",
+                accessor: "name",
                 Cell: row => <div style={{ textAlign: "center" }}>{row.value}</div>,
                 filterable: true,
                 filterMethod: (filter, row) =>

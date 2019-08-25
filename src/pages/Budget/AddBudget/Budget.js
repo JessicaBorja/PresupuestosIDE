@@ -14,6 +14,9 @@ import Badge from 'react-bootstrap/Badge'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import swal from 'sweetalert';
 
+import XLSX from 'xlsx';
+import {saveAs} from 'file-saver';
+
 const range = len => {
   const arr = [];
   for (let i = 0; i < len; i++) {
@@ -159,7 +162,64 @@ export class BudgetPage extends Component {
 
   handleSave=()=>{
     console.log("saving")
-    console.log(this.state)
+    console.log(this.state.budgetKey)
+    let estado=JSON.parse(JSON.stringify(this.state))
+
+    let info=[estado.budgetKey,estado.customer, estado.date, estado.attention,estado.header,    
+    estado.wastePercentage,estado.indirectPercentage,estado.finantialPercentage,estado.earningPercentage,
+    ,estado.percentageTotal]
+    // partidas:[{_id:1,ultima:true,descripcion:null,unidad:null,cantidadPartida:null,hidden:true,conceptos:[]}]
+
+    let secciones=JSON.parse(JSON.stringify(this.state.partidas))
+    // console.log(secciones)
+    console.log(info)
+    var wb = XLSX.utils.book_new();
+    wb.Props = {
+      Title: "SheetJS Tutorial",
+      Subject: "Test",
+      Author: "Red Stapler",
+      CreatedDate: new Date(2017,12,19)
+    };
+    wb.SheetNames.push("Presupuesto");
+    wb.SheetNames.push("Materiales");
+
+    console.log(wb.SheetNames)
+    var ws_data = [['hello' , 'world'],
+      ['hello' , 'world','world2'],
+      info
+    ];  
+
+    var ws_data2 = [['hello' , 'world'],
+    ];  
+
+    // Now create the sheet from this array by using aoa_to_sheet()
+    var ws = XLSX.utils.aoa_to_sheet(ws_data);
+    var ws2 = XLSX.utils.aoa_to_sheet(ws_data2);
+
+    wb.Sheets["Presupuesto"] = ws;
+    wb.Sheets["Materiales"] = ws2;
+
+    // /* get the first worksheet */
+    // const sheet_name_list = wb.SheetNames;
+    // console.log(sheet_name_list)
+    // console.log(wb.Sheets)
+    // const worksheet = wb.Sheets[sheet_name_list[0]];
+    // console.log(worksheet)
+
+    // let address = 'F1';
+    // let Sheet1F1 =   worksheet[address];
+    // /* create a stub cell if it doesn't exist */
+    // if(!Sheet1F1) Sheet1F1 = worksheet[address] = {t:'z'};
+
+    var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+    function s2ab(s) { 
+      var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+      var view = new Uint8Array(buf);  //create uint8array as viewer
+      for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+      return buf;    
+    }
+    // filesaver
+      saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), `${this.state.budgetKey}.xlsx`);
   }
 
   addConcept=(Id,valor)=>{
@@ -294,7 +354,7 @@ export class BudgetPage extends Component {
                 </Col>
                 <Col xs={12} lg={7}>
                     <Form.Label>Encabezado:</Form.Label>
-                    <Form.Control type="email" placeholder={this.state.header}
+                    <Form.Control type="text" as="textarea" rows="1" placeholder={this.state.header}
                     onChange={this.handleChange('header')}/>
                 </Col>
                 <Col>
@@ -351,7 +411,7 @@ export class BudgetPage extends Component {
                                   {/* Descripcion de concepto {x+1}.0{i+1} */}
                             </div>
                             <div className='concept-child' style={{width:"100%"}}>
-                              <Form.Control type="text" placeholder={`Notas ${x+1}.0${i+1}`} 
+                              <Form.Control type="text" as="textarea" rows="3" placeholder={`Notas ${x+1}.0${i+1}`} 
                                 onChange={this.handleConceptChange.bind(this,partida._id,concepto._id,"notas")}/>
                             </div>
                             {/* <div className='concept-child' style={{width:"100%"}}>Notas {x+1}.0{i+1}</div> */}
