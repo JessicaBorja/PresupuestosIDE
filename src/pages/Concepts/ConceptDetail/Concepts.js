@@ -23,7 +23,8 @@ export class ConceptsPage extends Component {
             id: "",
             auxMaterialGroupsInConcept: [],
             concept: [],
-            materialGroups:[]
+            materialGroups:[],
+            first:false
             // modalShow:false
         }
     }
@@ -351,14 +352,18 @@ export class ConceptsPage extends Component {
             <Layout>
                 <div className="concepts">
                     <h1>Edicion de Concepto: {this.state.concept.conceptKey}</h1>
+                    {/* {this.state.first&& */}
+
                     <div className="materials-table-cont">
-                        <Query
+                            <Query
                             query={GET_CONCEPT}
                             variables={{ id: this.props.match.params.id }}
                             onCompleted={data => {
                                 console.log(` al terminar busqueda concepto: ${this.props.match.params.id}`)
                                 console.log(data.concept.auxMaterialGroups)
-                                this.setState({ concept: data.concept })
+                                this.setState({ concept: data.concept,
+                                // first:true
+                            })
                             }}
                         >
                             {({ loading, error, data }) => {
@@ -381,39 +386,46 @@ export class ConceptsPage extends Component {
                             }}
                         </Query>
                     </div>
-
+                        // }
                     <h1>Agregar Precio Unitario </h1>
 
-                    <div className="materials-table-cont">
-                        <Query
-                            query={GET_AUXMATGROUPS}
-                            onCompleted={data => {
-                                console.log("al terminar auxMaterialsGroupsInDb")
-                                console.log(data)
-                                // console.log(data.concept.auxMaterialGroups)
-                                this.setState({ materialGroups: data.materialGroups})
-                            }}
-                        >
-                            {({ loading, error, data }) => {
-                                // console.log("auxMaterialsGroupsInDb")
-                                // console.log(data.materialGroups)
-                                // console.log(data.concept)
-                                // console.log(this.state.concept)
-                                if (loading) return <Spinner />;
-                                if (error) return <p>Error :( recarga la página!</p>;
-                                return (
-                                    <ReactTable
-                                        data={this.state.materialGroups}
-                                        columns={columns2}
-                                        defaultPageSize={2}
-                                        minRows={0}
-                                        showPaginationBottom={true}
+                        <div className="materials-table-cont">
+                            <Query
+                                query={GET_AUXMATGROUPS}
+                                // onCompleted={data => {
+                                //     console.log("al terminar auxMaterialsGroupsInDb")
+                                //     console.log(data)
+                                //     // console.log(data.concept.auxMaterialGroups)
+                                //     this.setState({ materialGroups: data.materialGroups,
+                                //     first:true
+                                //     })
+                                // }}
+                            >
+                                {({ loading, error, data }) => {
+                                    console.log("auxMaterialsGroupsInDb")
+                                    // console.log(data.materialGroups)
+                                    // console.log(data.concept)
+                                    // console.log(this.state.concept)
+                                    if (loading) return <Spinner />;
+                                    if (error) {
+                                        console.log(error)
+                                        return <p>Error :( recarga la página!</p>;}
+                                    return (
+                                        <ReactTable
+                                            // data={this.state.materialGroups}
+                                            data={data.materialGroups}
+                                            columns={columns2}
+                                            defaultPageSize={2}
+                                            minRows={0}
+                                            showPaginationBottom={true}
+    
+                                        />
+                                    );
+                                }}
+                            </Query>
+                        </div>
+                    
 
-                                    />
-                                );
-                            }}
-                        </Query>
-                    </div>
 
 
                 </div>

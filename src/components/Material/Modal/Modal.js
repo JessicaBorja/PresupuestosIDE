@@ -9,6 +9,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton'
 
 class MaterialModal extends Component {
     edit=false;
+    // title="codigo"
 
     constructor(props) {
         super(props);
@@ -20,6 +21,7 @@ class MaterialModal extends Component {
         let measurementUnit = "";
         let id = "";
         let materialKeySubIndex="";
+        let title="Codigo"
 
         if (props.material) {
             if (props.material.materialKey) materialKey = props.material.materialKey;
@@ -29,10 +31,12 @@ class MaterialModal extends Component {
             if (props.material.totalPrice) totalPrice = props.material.totalPrice;
             if (props.material.measurementUnit) measurementUnit = props.material.measurementUnit;
             if (props.material._id) id = props.material._id;
+            if (props.title) title = props.title;
+
             this.edit=true;
         }
         this.state = {
-            materialKey, name, quantity, unitPrice, totalPrice, measurementUnit, id,materialKeySubIndex
+            materialKey, name, quantity, unitPrice, totalPrice, measurementUnit, id,materialKeySubIndex,title
         }
     }
 
@@ -44,7 +48,8 @@ class MaterialModal extends Component {
     handleSelect=(selectedValue)=>{
         console.log(selectedValue)
         this.setState({
-            materialKeySubIndex:selectedValue
+            materialKeySubIndex:selectedValue,
+            title:selectedValue
         })
     }
 
@@ -67,7 +72,9 @@ class MaterialModal extends Component {
                     <Container fluid>
                         <Row>
                             <Col xs={12} lg={2}>
-                                <DropdownButton variant="secondary" title='Código' onSelect={this.handleSelect.bind(this)}>
+                            {/* title='Código'  */}
+                            {/* onSelect={this.handleSelect.bind(this) */}
+                                <DropdownButton variant="secondary" title={this.props.title} onSelect={this.props.changeSelect}>
                                     <Dropdown.Item as="button" eventKey='MO-' >Personal</Dropdown.Item>
                                     <Dropdown.Item as="button" eventKey='EQ-'>Equipo</Dropdown.Item>
                                     <Dropdown.Item as="button" eventKey='HE-'>Herramienta</Dropdown.Item>

@@ -20,15 +20,24 @@ export class MaterialsPage extends Component {
   state = {
     addModalShow: false,
     file: null,
+    title:"codigo",
     selectedMaterial: { _id: "" }
   };
 
   handleAddModalOpen = () => {
     this.setState({
-      addModalShow: true
+      addModalShow: true,
+      title:"codigo"
     });
   };
 
+  changeSelect=(selectedValue)=>{
+    this.setState({
+      // materialKeySubIndex:selectedValue,
+      title:selectedValue
+  })
+  }
+  
   handleAddModalClose = () => {
     this.setState({
       addModalShow: false
@@ -292,7 +301,10 @@ export class MaterialsPage extends Component {
               <MaterialModal
                 show={this.state.addModalShow}
                 onHide={this.handleAddModalClose}
+                title={this.state.title}
+                changeSelect={this.changeSelect}
                 onConfirm={material => {
+                  material.materialKeySubIndex=this.state.title;
                   let condition =
                     material.materialKey === null ||
                     material.materialKey.length === 0;
@@ -326,6 +338,7 @@ export class MaterialsPage extends Component {
                         material.materialKeySubIndex + material.materialKey;
                       console.log("grabando");
                       console.log(material);
+                      // material.name=this.state.title+material.name
                       createMaterial({
                         variables: {
                           ...material,
@@ -339,7 +352,7 @@ export class MaterialsPage extends Component {
                         `Proceso de adicion de material: "${
                           material.materialKey
                         }" exitoso!`,
-                        "Su informacion se ha removido!",
+                        "Su informacion se ha guardado!",
                         "success"
                       );
                       this.setState({ addModalShow: false });

@@ -124,6 +124,7 @@ export class UnitPage extends Component {
     handleAdd = (addMaterial) => {
         console.log("Add")
         console.log(addMaterial)
+        console.log(addMaterial.unitPrice)
         let materials=this.state.materialsInConcept
         console.log(materials)
         const materialIndex = materials.findIndex(
@@ -131,13 +132,13 @@ export class UnitPage extends Component {
         );
         console.log("found")
         console.log(materialIndex)
-        if(materialIndex===-1){
+        let typicalDialog=()=>{
             swal({
                 title:"Ingresa cantidad",
                 content:'input',
                 inputValue:"valor",
                 showCancelButton:true,
-              }).then((value)=>{
+                }).then((value)=>{
                 if(!value || isNaN(Number(value)) || Number(value)<=0){
                     swal(`Favor de ingresar un numero mayor a 0, usted ingreso: ${value}`);
                 }
@@ -153,7 +154,24 @@ export class UnitPage extends Component {
                         // show:true
                     })    
                 }
-              })
+            })    
+        }   
+
+        if(materialIndex===-1){
+            if(addMaterial.unitPrice<=0){
+                // alert("hola")
+                swal({
+                    title:"El material seleccionado tiene un precio de 0"
+                }).then(()=>{
+                    typicalDialog()
+                })
+            }
+            else{
+                typicalDialog()
+            }
+         
+        
+        
         }
         else{
             swal(`Ya cuenta con ese material`);
@@ -310,7 +328,7 @@ export class UnitPage extends Component {
             Header: "Precio",
             accessor: "unitPrice",
             // headerStyle: {textAlign: 'right'},
-            Cell: row => <div style={{ textAlign: "center" }}>${row.value}</div>,
+            Cell: row => <div style={{ textAlign: "center" }}>${row.value.toFixed(2)}</div>,
             },
             {
             Header: props => <span>Operacion a realizar</span>, // Custom header components!
