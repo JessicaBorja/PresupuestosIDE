@@ -36,6 +36,7 @@ export class UnitPage extends Component {
     componentDidMount=()=>{
         console.log("\n====pagina de precios unitarios\n")
         subidos=0;
+        materials=[]
         this.searchUnits();
     }
 

@@ -448,7 +448,7 @@ export class BudgetPage extends Component {
                               onChange={this.handleConceptChange.bind(this,partida._id,concepto._id,"quantity")}/>
                             </div>
                             <div className='concept-child' style={{width:"12%",backgroundColor:"#699c9c"}}>{concepto.price.toFixed(2)}</div>
-                            <p >hola</p>
+                            {/* <p >hola</p> */}
                           </Row>
                         )
                       })

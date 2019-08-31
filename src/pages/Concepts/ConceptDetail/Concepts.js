@@ -386,7 +386,6 @@ export class ConceptsPage extends Component {
                             }}
                         </Query>
                     </div>
-                        // }
                     <h1>Agregar Precio Unitario </h1>
 
                         <div className="materials-table-cont">

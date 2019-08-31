@@ -59,6 +59,7 @@ export class UnitPage extends Component {
   };
 
   handleDelete = selectedMaterial => {
+    console.log(selectedMaterial)
     // swal("Proceso de eliminado exitoso!", "Su informacion se ha removido!", "success");
     // swal("Proceso de eliminado no exitoso!", "Notificar al programador!", "error");
     swal({
