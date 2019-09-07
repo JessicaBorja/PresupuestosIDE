@@ -13,6 +13,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { GET_MATERIALS, ADD_MATERIAL,ADD_UNIT ,GET_UNITS} from "./constants";
 import { withApollo } from "react-apollo";
 // import { join } from 'path';
+
 let subidos=0;
 let materials=[]
 
@@ -390,13 +391,13 @@ export class UnitPage extends Component {
                     data-param={row.value}
                     onClick={() => this.handleEdit(row.original)}
                 >
-                    Editar
+                    <FontAwesomeIcon icon={['fa', 'edit']} size={"1x"}/>
                 </Button>
                 <Button variant="danger"
                     data-param={row.value}
                     onClick={() => this.handleDelete(row.original)}
                 >
-                    Eliminar
+                    <FontAwesomeIcon icon={['fa', 'trash']} size={"1x"}/>
                 </Button>
                 </div>
             )

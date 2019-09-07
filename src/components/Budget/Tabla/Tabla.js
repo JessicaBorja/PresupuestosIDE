@@ -51,6 +51,20 @@ class Tabla extends Component {
                 row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
         },
         {
+            Header: "Mo",
+            accessor: "Mo",
+            Cell: row => <div style={{ textAlign: "center"}}>{row.value?row.value.toFixed(2):row.value}</div>,
+            filterMethod: (filter, row) =>
+                row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
+        },
+        {
+            Header: "noMo",
+            accessor: "noMo",
+            Cell: row => <div style={{ textAlign: "center" }}>{row.value?row.value.toFixed(2):row.value}</div>,
+            filterMethod: (filter, row) =>
+                row[filter.id].toLowerCase().includes(filter.value.toLowerCase())
+        },
+        {
             Header: "Precio",
             accessor: "price",
             // headerStyle: {textAlign: 'right'},

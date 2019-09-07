@@ -40,6 +40,8 @@ export const GET_CONCEPTS = gql`
       measurementUnit
       conceptKey
       price
+      Mo
+      noMo
     }
   }
 `;

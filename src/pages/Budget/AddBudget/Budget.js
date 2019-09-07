@@ -144,10 +144,18 @@ export class BudgetPage extends Component {
     secciones[seccionIndex].precioUnitario=totalPrice.toFixed(2);
     secciones[seccionIndex].subtotal=(+(secciones[seccionIndex].cantidadPartida)*+(totalPrice)).toFixed(2);
     secciones[seccionIndex].importeTotal=(+(secciones[seccionIndex].cantidadPartida)*+(totalPrice)).toFixed(2);
-
-
+    console.log("===totals")
+    let totalWithPercentage=0;
+    secciones.forEach((seccion,i)=>{
+      if(i<secciones.length-1){
+        totalWithPercentage+=Number(seccion.importeTotal);
+        console.log(seccion.importeTotal)  
+      }
+    })
+    totalWithPercentage= totalWithPercentage.toFixed(2);
     this.setState({
-      partidas:secciones
+      partidas:secciones,
+      totalWithPercentage
     })
     
     // secciones[seccionIndex].precioUnitario
@@ -260,7 +268,6 @@ export class BudgetPage extends Component {
       else {
         console.log(`agregando cantidad: ${value}`)
         console.log("agregando elemento")
-        console.log("magia")
         console.log(valor)
         console.log(Id)
         let secciones=JSON.parse(JSON.stringify(this.state.partidas))
@@ -269,8 +276,8 @@ export class BudgetPage extends Component {
         );
         valor.quantity=+value;
         valor.totalPrice=(+value)*(+valor.price);
-        valor.mo=0;
-        valor.noMo=0;
+        valor.Mo=(+valor.Mo);
+        valor.noMo=(+valor.noMo);
         valor.description=""
         valor.notas=""
         // console.log(seccionIndex)
